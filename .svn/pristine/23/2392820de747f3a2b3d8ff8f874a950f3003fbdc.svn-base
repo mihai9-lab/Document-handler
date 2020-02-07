@@ -1,0 +1,180 @@
+package configuration;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+import actions.AbstractIconAction;
+import observer.interfaces.IOListener;
+
+public class Configurations implements IConfigurations {
+	
+	private Map<AbstractIconAction,Boolean> toolbarActions;
+	private ArrayList<IOListener> listeners;
+	private File toolbarFile;
+	
+	public Boolean isActionInToolbar(AbstractIconAction a) {
+		return toolbarActions.get(a);
+	}
+	
+	public void setActionInToolbar(AbstractIconAction a,Boolean b) {
+		toolbarActions.put(a,b);
+		writeToolbarConfiguration();
+		this.notifyObserver(a);
+	}
+	
+	public Configurations() {
+		toolbarActions = new HashMap<AbstractIconAction,Boolean>();
+		readToolbarConfigurations();
+	}
+	
+	private void readToolbarConfigurations() {
+		toolbarActions.clear();
+		toolbarFile = new File("configurations/configurations.tcfg");
+		if(!toolbarFile.exists()) {
+			toolbarActions.put(gui.Frame.getInstance().getActionManager().getNewNodeAction(), true);
+			toolbarActions.put(gui.Frame.getInstance().getActionManager().getRenameNodeAction(), true);
+			toolbarActions.put(gui.Frame.getInstance().getActionManager().getDeleteNodeAction(), true);
+			toolbarActions.put(gui.Frame.getInstance().getActionManager().getOpenNodeAction(), true);
+			toolbarActions.put(gui.Frame.getInstance().getActionManager().getSaveNodeAction(), true);
+			toolbarActions.put(gui.Frame.getInstance().getActionManager().getCloseTabAction(), true);
+			toolbarActions.put(gui.Frame.getInstance().getActionManager().getCloseAllTabsAction(), true);
+			return;
+		}
+		try {
+			Scanner reader = new Scanner(toolbarFile);
+			while(reader.hasNextLine()) {
+				String line = reader.nextLine();
+				String action = line.split(" ")[0];
+				String inside = line.split(" ")[1];
+				Boolean b;
+				if(inside.equals("true")) b = new Boolean(true);
+				else b = new Boolean(false);
+				if(action.equals("NewNodeAction")) toolbarActions.put(gui.Frame.getInstance().getActionManager().getNewNodeAction(), b);
+				else if(action.equals("RenameNodeAction")) toolbarActions.put(gui.Frame.getInstance().getActionManager().getRenameNodeAction(), b);
+				else if(action.equals("DeleteNodeAction")) toolbarActions.put(gui.Frame.getInstance().getActionManager().getDeleteNodeAction(), b);
+				else if(action.equals("OpenNodeAction")) toolbarActions.put(gui.Frame.getInstance().getActionManager().getOpenNodeAction(), b);
+				else if(action.equals("SaveNodeAction")) toolbarActions.put(gui.Frame.getInstance().getActionManager().getSaveNodeAction(), b);
+				else if(action.equals("CloseTabAction")) toolbarActions.put(gui.Frame.getInstance().getActionManager().getCloseTabAction(), b);
+				else if(action.equals("CloseAllTabsAction")) toolbarActions.put(gui.Frame.getInstance().getActionManager().getCloseAllTabsAction(), b);
+			}
+			reader.close();
+		}
+		catch(Exception e) {
+			gui.Frame.getInstance().getExceptionHandler().handleException("unknown_error");
+		}
+		this.notifyObserver(this);
+	}
+	
+	private void writeToolbarConfiguration() {
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter("configurations/configurations.tcfg"));
+			if(toolbarActions.get(gui.Frame.getInstance().getActionManager().getNewNodeAction())==true) {
+				bw.write("NewNodeAction true");
+				bw.newLine();
+			}
+			else {
+				bw.write("NewNodeAction false");
+				bw.newLine();
+			}
+			if(toolbarActions.get(gui.Frame.getInstance().getActionManager().getRenameNodeAction())==true) {
+				bw.write("RenameNodeAction true");
+				bw.newLine();
+			}
+			else {
+				bw.write("RenameNodeAction false");
+				bw.newLine();
+			}
+			if(toolbarActions.get(gui.Frame.getInstance().getActionManager().getDeleteNodeAction())==true) {
+				bw.write("DeleteNodeAction true");
+				bw.newLine();
+			}
+			else {
+				bw.write("DeleteNodeAction false");
+				bw.newLine();
+			}
+			if(toolbarActions.get(gui.Frame.getInstance().getActionManager().getSaveNodeAction())==true) {
+				bw.write("SaveNodeAction true");
+				bw.newLine();
+			}
+			else {
+				bw.write("SaveNodeAction false");
+				bw.newLine();
+			}
+			if(toolbarActions.get(gui.Frame.getInstance().getActionManager().getOpenNodeAction())==true) {
+				bw.write("OpenNodeAction true");
+				bw.newLine();
+			}
+			else {
+				bw.write("OpenNodeAction false");
+				bw.newLine();
+			}
+			if(toolbarActions.get(gui.Frame.getInstance().getActionManager().getCloseTabAction())==true) {
+				bw.write("CloseTabAction true");
+				bw.newLine();
+			}
+			else {
+				bw.write("CloseTabAction false");
+				bw.newLine();
+			}
+			if(toolbarActions.get(gui.Frame.getInstance().getActionManager().getCloseAllTabsAction())==true) {
+				bw.write("CloseAllTabsAction true");
+				bw.newLine();
+			}
+			else {
+				bw.write("CloseAllTabsAction false");
+				bw.newLine();
+			}
+			bw.close();
+		}
+		catch(Exception e) {
+			gui.Frame.getInstance().getExceptionHandler().handleException("unknown_error");
+		}
+	}
+	
+
+	@Override
+	public void addObserver(IOListener listener) {
+
+		if(listener == null)
+			return;
+		if(listeners == null)
+			listeners = new ArrayList<IOListener>();
+		if(listeners.contains(listener))
+			return;
+		listeners.add(listener);
+
+	}
+
+	@Override
+	public void removeObserver(IOListener listener) {
+
+		if(listener == null)
+			return;
+		if(!listeners.contains(listener))
+			return;
+		listeners.remove(listener);
+
+	}
+
+	@Override
+	public void notifyObserver(Object event) {
+
+		if(event == null)
+			return;
+		if(listeners == null)
+			return;
+
+		ArrayList<IOListener> temporaryListeners = new ArrayList<IOListener>();
+		for(IOListener listener:listeners) temporaryListeners.add(listener);
+		for(IOListener listener:temporaryListeners) {
+			listener.update(event);
+		}
+	}
+	
+}

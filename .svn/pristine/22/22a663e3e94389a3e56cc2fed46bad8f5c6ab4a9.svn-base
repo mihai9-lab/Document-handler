@@ -1,0 +1,42 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+
+import error_handling.ExceptionHandler;
+import gui.Frame;
+import tree.model.Project;
+import tree.model.Workspace;
+import tree.model.Document;
+import tree.model.Page;
+public class NewNodeAction extends AbstractIconAction {
+	
+	public NewNodeAction() {
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
+		        KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/toolbar-new.png"));
+		putValue(NAME, "New");
+		putValue(SHORT_DESCRIPTION, "New (Ctrl + N)");
+	}
+
+	public void actionPerformed(ActionEvent arg0) {
+		
+		Object node = Frame.getInstance().getWorkspaceTree().getLastSelectedPathComponent();
+		if(node!=null) {
+			if(node instanceof Workspace) ((Workspace)(node)).addProject();
+			else if(node instanceof Project) ((Project)(node)).addDocument();
+			else if(node instanceof Document) ((Document)(node)).addPage();
+			else if(node instanceof Page) {
+				gui.Frame.getInstance().getExceptionHandler().handleException("page_child");
+			}
+			SwingUtilities.updateComponentTreeUI(gui.Frame.getInstance().getWorkspaceTree());
+		}
+		else {
+			gui.Frame.getInstance().getExceptionHandler().handleException("no_node_selected");
+		}
+	}
+
+}

@@ -1,0 +1,91 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.TreeNode;
+
+import gui.Frame;
+import tree.model.Document;
+import tree.model.ITreeNodeSerialization;
+import tree.model.Page;
+import tree.model.Project;
+import tree.model.Workspace;
+import tree.model.WorkspaceModel;
+
+public class OpenNodeAction extends AbstractIconAction {
+
+	public OpenNodeAction() {
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
+		        KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/toolbar-open.png"));
+		putValue(NAME, "Open");
+		putValue(SHORT_DESCRIPTION, "Open (Ctrl + O)");
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		TreeNode node = (TreeNode)Frame.getInstance().getSerialiser().open();
+		if(node == null) return;
+		
+		if(node instanceof Workspace) 
+			openWorkspace((Workspace) node);
+		else if(node instanceof Project)
+			openProject((Project)node);
+		else
+			openDocument((Document)node);
+		
+		SwingUtilities.updateComponentTreeUI(gui.Frame.getInstance().getWorkspaceTree());
+	}
+	
+	
+	private void openWorkspace(Workspace ws) {
+		int option = JOptionPane.showConfirmDialog(Frame.getInstance(),
+												   "You have selected Workspace file.\nAre you sure you want to open new Workspace?",
+												   "Message",
+												   JOptionPane.YES_NO_OPTION);
+		if(option == JOptionPane.NO_OPTION) 
+			return;
+		
+		Workspace current = (Workspace)Frame.getInstance().getWorkspaceTree().getModel().getRoot();
+		if(current.isChanged()) {
+			option = JOptionPane.showConfirmDialog(Frame.getInstance(),
+					   "Your current Workspace isn't saved. Do you want to save it?\nKeep in mind that if you don't save it all unsaved Projects and Documents will be lost.",
+					   "Message", 
+					   JOptionPane.YES_NO_OPTION);
+			
+			if(option == JOptionPane.YES_OPTION) 
+				Frame.getInstance().getSerialiser().save((ITreeNodeSerialization)current);
+		}
+		WorkspaceModel model = new WorkspaceModel((Workspace)ws);
+		Frame.getInstance().setWorkspaceModel(model);
+	}
+	
+	private void openProject(Project prj) {
+		Workspace ws = (Workspace)Frame.getInstance().getWorkspaceTree().getModel().getRoot();
+		ws.addProject(prj);
+	}
+	
+	private void openDocument(Document doc) {
+		Object node = Frame.getInstance().getWorkspaceTree().getLastSelectedPathComponent();
+		Workspace ws = (Workspace)Frame.getInstance().getWorkspaceTree().getModel().getRoot();
+		if(node instanceof Workspace || node == null) {
+			String s = "Project (" + doc.toString().toLowerCase() + ")"; 
+			Project prj = new Project(null, s, 0);
+			ws.addProject(prj);
+			prj.addDocument(doc);
+			
+		}
+		else {
+			if(node instanceof Page)
+				node = ((Page)node).getParent();
+			if(node instanceof Document)
+				node = ((Document)node).getParent();
+			
+			((Project)node).addDocument(doc);
+		}	
+	}
+}

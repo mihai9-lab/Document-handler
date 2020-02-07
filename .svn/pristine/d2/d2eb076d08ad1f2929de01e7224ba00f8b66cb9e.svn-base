@@ -1,0 +1,13 @@
+package directory.browser;
+
+import java.io.File;
+
+import javax.swing.tree.TreeNode;
+
+import tree.model.ITreeNodeSerialization;
+
+public interface IDirectoryBrowser {
+	
+	public File getSaveLocation(ITreeNodeSerialization node);
+	public File getOpenLocation();
+}

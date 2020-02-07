@@ -1,0 +1,8 @@
+package serialization;
+
+import javax.swing.tree.TreeNode;
+
+public interface ISerialization {
+	void save(TreeNode n);
+	TreeNode open();
+}

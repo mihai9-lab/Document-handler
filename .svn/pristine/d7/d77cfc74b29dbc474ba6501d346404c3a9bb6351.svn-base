@@ -1,0 +1,17 @@
+package gui;
+
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeCellRenderer;
+
+import view.WorkspaceTreeCellRendered;
+import view.WorkspaceTreeEditor;
+
+public class WorkspaceTree extends JTree {
+
+	public WorkspaceTree() {
+	    setCellEditor(new WorkspaceTreeEditor(this,new DefaultTreeCellRenderer()));
+	    setCellRenderer(new WorkspaceTreeCellRendered());
+	    setEditable(true);
+	}
+
+}

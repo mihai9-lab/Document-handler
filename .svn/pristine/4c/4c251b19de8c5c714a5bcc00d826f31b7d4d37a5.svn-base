@@ -1,0 +1,117 @@
+package state;
+
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
+import tree.model.Page;
+import tree.model.Slot;
+import tree.model.geometry.CircleGeometry;
+import tree.model.geometry.IGeometry;
+import tree.model.geometry.RectangleGeometry;
+import view.PageView;
+
+public class SelectState implements IState {
+	private Point pos;
+	private Page p;
+	private Slot s;
+	private boolean translation=false;
+	private double rotatedFor=0;
+	private double scaledFor=1;
+	private double innerCoeff=0.7;
+	private double dXFor = 0;
+	private double dYFor = 0;
+	
+	public void mousePressed(MouseEvent e){
+		pos=e.getPoint();
+		p=((PageView)e.getComponent()).getPage();
+		int c=p.getSlotsCount();
+		s=null;
+		for(int i=0;i<c;i++) {
+			Slot sCurrent = p.getSlot(i);
+			if(sCurrent.getGeometry().getGeometryPainter().elementAt(pos)) {
+				sCurrent.getGeometry().scale(innerCoeff);
+				if(sCurrent.getGeometry().getGeometryPainter().elementAt(pos)) translation = true;
+				else translation = false;
+				s=sCurrent;
+				sCurrent.getGeometry().scale(1.0/innerCoeff);
+				break;
+			}
+		}
+	}
+	
+	public void mouseDragged(MouseEvent e){
+		if(p!=null && p==((PageView)e.getComponent()).getPage() && s!=null) {
+			p.removeSlot(s);
+			if(translation) {
+				double dx = e.getPoint().getX() - pos.getX();
+				double dy = e.getPoint().getY() - pos.getY();
+				s.getGeometry().translate(dx, dy);
+				if(!inside(e)) s.getGeometry().translate(-dx,-dy);
+				else pos = e.getPoint();
+			}
+			else {
+				double xCenter = s.getGeometry().getXCenter();
+				double yCenter = s.getGeometry().getYCenter();
+				double dx = pos.getX() - xCenter;
+				double dy = pos.getY() - yCenter;
+				double oldDist = Math.sqrt(dx*dx+dy*dy);
+				double oldAng = Math.atan2(-dy, dx);
+				dx = e.getPoint().getX() - xCenter;
+				dy = e.getPoint().getY() - yCenter;
+				double curDist = Math.sqrt(dx*dx+dy*dy);
+				double curAng = Math.atan2(-dy, dx);
+				s.getGeometry().scale(curDist/oldDist);
+				s.getGeometry().rotate(curAng-oldAng);
+				if(!inside(e)) {
+					s.getGeometry().scale(oldDist/curDist);
+					s.getGeometry().rotate(oldAng-curAng);
+				}
+				else pos = e.getPoint();
+			}
+			p.addSlot(s);
+		}
+	}
+	
+	public void mouseReleased(MouseEvent e){
+		if(p!=null && p==((PageView)e.getComponent()).getPage() && s!=null) {
+			p.removeSlot(s);
+			if(translation) {
+				double dx = e.getPoint().getX() - pos.getX();
+				double dy = e.getPoint().getY() - pos.getY();
+				s.getGeometry().translate(dx, dy);
+				if(!inside(e)) s.getGeometry().translate(-dx,-dy);
+				else pos = e.getPoint();
+			}
+			else {
+				double xCenter = s.getGeometry().getXCenter();
+				double yCenter = s.getGeometry().getYCenter();
+				double dx = pos.getX() - xCenter;
+				double dy = pos.getY() - yCenter;
+				double oldDist = Math.sqrt(dx*dx+dy*dy);
+				double oldAng = Math.atan2(-dy, dx);
+				dx = e.getPoint().getX() - xCenter;
+				dy = e.getPoint().getY() - yCenter;
+				double curDist = Math.sqrt(dx*dx+dy*dy);
+				double curAng = Math.atan2(-dy, dx);
+				s.getGeometry().scale(curDist/oldDist);
+				s.getGeometry().rotate(curAng-oldAng);
+				if(!inside(e)) {
+					s.getGeometry().scale(oldDist/curDist);
+					s.getGeometry().rotate(oldAng-curAng);
+				}
+				else pos = e.getPoint();
+			}
+			p.addSlot(s);
+		}
+	}
+	
+	public boolean inside(MouseEvent e) {
+		PageView pv = (PageView)e.getComponent();
+		if(s.getGeometry().getMaxX()>pv.getWidth()) return false;
+		if(s.getGeometry().getMinX()<0) return false;
+		if(s.getGeometry().getMaxY()>pv.getHeight()) return false;
+		if(s.getGeometry().getMinY()<0) return false;
+		return true;
+	}
+	
+}

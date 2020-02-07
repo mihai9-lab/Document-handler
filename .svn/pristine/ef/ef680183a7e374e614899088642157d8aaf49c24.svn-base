@@ -1,0 +1,19 @@
+package serialization;
+
+import javax.swing.tree.TreeNode;
+
+public class ProjectSerialization implements ISerialization {
+
+	@Override
+	public void save(TreeNode n) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public TreeNode open() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

@@ -1,0 +1,106 @@
+package serialization;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import directory.browser.DirectoryBrowser;
+import directory.browser.IDirectoryBrowser;
+import tree.model.ITreeNodeSerialization;
+import tree.model.Workspace;
+
+public class NodeSerialization implements ISerialization {
+
+	IDirectoryBrowser dirBrowser;
+	
+	public boolean save(ITreeNodeSerialization node) {
+		
+		
+		if(!node.isChanged()) 
+			return false;
+		File f=node.getLocation();
+		if(f == null) {
+			
+			dirBrowser = new DirectoryBrowser();
+			f = dirBrowser.getSaveLocation(node);
+			if(f==null)
+				return false;
+			node.setLoaction(f);
+		}
+		
+		
+		ObjectOutputStream outStream=null;
+		try {
+			outStream = new ObjectOutputStream(new FileOutputStream(f));
+			outStream.writeObject(node);
+			node.setChanged(false);
+			outStream.close();
+			return true;
+		}
+		catch (FileNotFoundException e) {
+			gui.Frame.getInstance().getExceptionHandler().handleException("invalid_file");
+		} 
+		catch (IOException e) {
+			gui.Frame.getInstance().getExceptionHandler().handleException("invalid_file");
+		}
+		return false;
+	}
+	
+	public ITreeNodeSerialization open() {
+		dirBrowser = new DirectoryBrowser();
+		
+		File f = dirBrowser.getOpenLocation();
+		if(f==null)
+			return null;
+		
+		ObjectInputStream inStream;
+		ITreeNodeSerialization node=null;
+		
+		try {
+			inStream = new ObjectInputStream(new FileInputStream(f));
+			node = (ITreeNodeSerialization) inStream.readObject();
+			node.setChanged(false);
+			inStream.close();
+			return node;
+		}
+		catch (IOException e) {
+			gui.Frame.getInstance().getExceptionHandler().handleException("invalid_file");
+		}
+		catch (ClassNotFoundException e) {
+			gui.Frame.getInstance().getExceptionHandler().handleException("invalid_file");
+		}
+		return null;
+	}
+	
+	
+	
+	public Workspace openWorkspace() {
+		dirBrowser = new DirectoryBrowser();
+		
+		File f = dirBrowser.getWorkspaceLocation();
+		if(f==null)
+			return null;
+		
+		ObjectInputStream inStream;
+		Workspace ws=null;
+		
+		try {
+			inStream = new ObjectInputStream(new FileInputStream(f));
+			ws = (Workspace) inStream.readObject();
+			ws.setChanged(false);
+			inStream.close();
+			return ws;
+		} 
+		catch (IOException e) {
+			gui.Frame.getInstance().getExceptionHandler().handleException("invalid_file");
+		} 
+		catch (ClassNotFoundException e) {
+			gui.Frame.getInstance().getExceptionHandler().handleException("invalid_file");
+		}
+		
+		return null;
+	}
+}

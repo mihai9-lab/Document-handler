@@ -1,0 +1,33 @@
+package gui.listeners.action;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
+public class TB1Listener implements ActionListener{
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		
+		Toolkit kit= Toolkit.getDefaultToolkit();
+		Dimension screenSize = kit.getScreenSize();
+		int jdWidth = screenSize.width/5;
+		int jdHeight = screenSize.height/5;
+		
+		JDialog jd = new JDialog();
+		JLabel lb = new  JLabel("Tekst Tekst Tekst",SwingConstants.CENTER);
+		jd.setSize(jdWidth,jdHeight);
+		jd.setLocationRelativeTo(null);
+		jd.setTitle("ToolBar Dugme Akcija");
+		jd.add(lb);
+		jd.setVisible(true);
+		
+	}
+
+}

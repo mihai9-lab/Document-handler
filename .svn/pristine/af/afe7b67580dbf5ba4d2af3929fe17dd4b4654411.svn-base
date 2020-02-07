@@ -1,0 +1,24 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+public class CBPasteAction extends AbstractIconAction {
+	
+	
+	public CBPasteAction() {
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
+		        KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/toolbar-paste.png"));
+		putValue(NAME, "Paste");
+		putValue(SHORT_DESCRIPTION, "Paste (Ctrl + V)");
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

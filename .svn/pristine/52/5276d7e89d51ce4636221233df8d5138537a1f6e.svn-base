@@ -1,0 +1,98 @@
+package tree.model;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+
+import javax.swing.tree.TreeNode;
+
+import observer.interfaces.IOListener;
+import observer.interfaces.IObserver;
+
+public class Project implements TreeNode,IObserver{
+
+	private ArrayList<IOListener> listeners;
+	
+	private ArrayList<Document> documents;
+	private String name;
+	private Workspace parentNode;
+	private boolean newProjectStatus;
+	private int newDocumentCount;
+	
+	public Project(Workspace parentNode, String name,boolean status) {
+		this.parentNode=parentNode;
+		this.name=name;
+		this.newProjectStatus=status;
+		newDocumentCount = 0;
+	}
+	
+	public boolean getNewProjectStatus() {
+		return newProjectStatus;
+	}
+	
+	public void renameProject(String name) {
+		this.name=name;
+		this.newProjectStatus=false;
+		notifyObserver(name);
+	}
+	
+	@Override
+	public TreeNode getChildAt(int childIndex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getChildCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public TreeNode getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getIndex(TreeNode node) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean getAllowsChildren() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isLeaf() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Enumeration<? extends TreeNode> children() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addObserver(IOListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeObserver(IOListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyObserver(Object event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

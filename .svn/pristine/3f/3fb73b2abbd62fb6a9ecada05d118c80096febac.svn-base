@@ -1,0 +1,296 @@
+package tree.model;
+
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+
+import javax.swing.tree.TreeNode;
+
+import observer.interfaces.IOListener;
+import observer.interfaces.IObserver;
+
+public class Project implements INode,Transferable{
+
+	transient private ArrayList<IOListener> listeners;
+	
+	static public DataFlavor projectFlavor;
+	static private DataFlavor[] supportedFlavors = {projectFlavor};
+	
+	private ArrayList<Document> documents;
+	private String name;
+	private Workspace parentNode;
+	private NewNodeNumberSet numbers;
+	
+	private int newProjectNumber;
+	private boolean erased;
+	private boolean selected;
+	
+	private boolean changed;
+	private File location;
+
+	public Project(Workspace parentNode, String name,int number) {
+		this.erased=false;
+		this.selected=false;
+		this.documents = new ArrayList<Document>();
+		this.parentNode = parentNode;
+		this.name = name;
+		this.newProjectNumber = number;
+		this.location = null;
+		this.changed = true;
+		this.numbers = new NewNodeNumberSet();
+		
+		try {
+			this.projectFlavor = new DataFlavor(Class.forName("tree.model.Project"),"Project");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public void add(TreeNode node) {
+		Document doc = (Document)node;
+		doc.setParentNode(this);
+		if(doc.toString()==null) {
+			int number = numbers.getNumber();
+			String documentName= "New Document " + number;
+			doc.renameDocument(documentName);
+			doc.setNumber(number);
+		}
+		documents.add(doc);
+		registerChange();
+		notifyObserver(this);
+	}
+	public void removeProject() {
+		erased=true;
+		parentNode.removeProject(this);
+		registerChange();
+		notifyObserver(this);
+	}
+
+	protected void removeDocument(Document doc) {
+		
+		if(doc==null)
+			return;
+		if(documents.isEmpty())
+			return;
+		if(!documents.contains(doc))
+			return;
+		
+		if(doc.getNewDocumentNumber()!=0)
+			this.numbers.giveBackNumber(doc.getNewDocumentNumber());
+			
+		documents.remove(doc);
+		registerChange();
+		notifyObserver(this);
+
+	}
+
+	public void renameProject(String name) {
+		this.name=name;
+		if(newProjectNumber!=0) {
+			parentNode.returnNumber(newProjectNumber);
+			newProjectNumber=0;
+		}
+		registerChange();
+		notifyObserver(this);
+	}
+	
+	protected void setNumber(int number) {
+		newProjectNumber = number;
+	}
+	protected void returnNumber(int number) {
+		this.numbers.giveBackNumber(number);
+	}
+	
+	protected void setParentNode(Workspace ws) {
+		this.parentNode =  ws;
+	}
+	public void select() {
+		this.parentNode.updateSelected(this);
+	}
+
+	public void setSelected(boolean selected) {
+		for(Document d:documents)
+			d.setClosed(!selected);
+		this.selected=selected;
+		notifyObserver(this);
+	}
+
+	public void closeAll() {
+		for(Document d:documents)
+			d.setClosed(true);
+	}
+
+	public boolean getSelected() {
+		return selected;
+	}
+
+	@Override
+	public TreeNode getChildAt(int childIndex) {
+
+		if(documents.isEmpty())
+			return null;
+		if(childIndex < 0)
+			return null;
+		if(documents.size() < childIndex)
+			return null;
+
+		return documents.get(childIndex);
+	}
+
+	@Override
+	public int getChildCount() {
+
+		return documents.size();
+	}
+
+	@Override
+	public TreeNode getParent() {
+
+		return parentNode;
+	}
+
+	@Override
+	public int getIndex(TreeNode node) {
+
+		if(node instanceof Document)
+			if(documents.contains(node))
+				return documents.indexOf((Document)node);
+
+		return -1;
+	}
+
+	@Override
+	public boolean getAllowsChildren() {
+
+		return true;
+	}
+
+	@Override
+	public boolean isLeaf() {
+
+		return false;
+	}
+
+	@Override
+	public Enumeration<Document> children() {
+
+		if(documents.isEmpty())
+			return null;
+		return Collections.enumeration(documents);
+	}
+
+	@Override
+	public void addObserver(IOListener listener) {
+
+		if(listener == null)
+			return;
+		if(listeners == null)
+			listeners = new ArrayList<IOListener>();
+		if(listeners.contains(listener))
+			return;
+		listeners.add(listener);
+
+	}
+
+	@Override
+	public void removeObserver(IOListener listener) {
+
+		if(listener == null)
+			return;
+		if(!listeners.contains(listener))
+			return;
+		listeners.remove(listener);
+
+	}
+
+	@Override
+	public void notifyObserver(Object event) {
+
+		if(event == null)
+			return;
+		if(listeners == null)
+			return;
+
+		ArrayList<IOListener> temporaryListeners = new ArrayList<IOListener>();
+		for(IOListener listener:listeners) temporaryListeners.add(listener);
+		for(IOListener listener:temporaryListeners) {
+			listener.update(event);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return this.name;
+	}
+	
+	public int getNewProjectNumber() {
+		return newProjectNumber;
+	}
+	
+	public boolean getErased() {
+		return erased;
+	}
+
+	
+	
+
+	public File getLocation() {
+		return location;
+	}
+	
+	public void registerChange() {
+		this.changed=true;
+		parentNode.registerChange();
+	}
+	
+	public boolean isChanged() {
+		return changed;
+	}
+	
+	public void setChanged(boolean changed) {
+		this.changed=changed;
+	}
+	
+	public void setLoaction(File f) {
+		this.location = f;
+	}
+	
+	private Object readResolve(){
+		 listeners = new ArrayList<IOListener>();
+		try {
+			this.projectFlavor = new DataFlavor(Class.forName("tree.model.Project"),"Project");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		 return this;
+	}
+
+	@Override
+	public DataFlavor[] getTransferDataFlavors() {
+		return supportedFlavors;
+	}
+
+	@Override
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+		if(flavor.equals(projectFlavor))
+			return true;
+		return false;
+	}
+
+	@Override
+	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+		if(flavor.equals(projectFlavor))
+			return this;
+		else
+			throw new UnsupportedFlavorException(projectFlavor);
+	}
+
+
+
+}

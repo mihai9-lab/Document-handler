@@ -1,0 +1,24 @@
+package view.geometry_painter;
+
+import java.awt.geom.GeneralPath;
+
+import tree.model.geometry.RectangleGeometry;
+
+public class RectanglePainter extends GeometryPainter{
+	public RectanglePainter(RectangleGeometry r) {
+		
+		super();
+		
+		shape=new GeneralPath();
+		
+		((GeneralPath)shape).moveTo(r.getXCenter()+r.getRadius()*Math.cos(r.getAngle()),r.getYCenter()-r.getRadius()*Math.sin(r.getAngle()));
+		
+		((GeneralPath)shape).lineTo(r.getXCenter()+r.getRadius()*Math.cos(r.getAngle2()),r.getYCenter()-r.getRadius()*Math.sin(r.getAngle2()));
+		
+		((GeneralPath)shape).lineTo(r.getXCenter()+r.getRadius()*Math.cos(r.getAngle()+Math.PI),r.getYCenter()-r.getRadius()*Math.sin(r.getAngle()+Math.PI));
+		
+		((GeneralPath)shape).lineTo(r.getXCenter()+r.getRadius()*Math.cos(r.getAngle2()+Math.PI),r.getYCenter()-r.getRadius()*Math.sin(r.getAngle2()+Math.PI));
+		
+		((GeneralPath)shape).closePath();
+	}
+}

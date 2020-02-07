@@ -1,0 +1,29 @@
+package command;
+
+import tree.model.Page;
+import tree.model.Slot;
+
+public class AddSlotCommand extends AbstractCommand {
+	
+	private Page p;
+	private Slot s;
+	
+	public AddSlotCommand(Page p,Slot s) {
+		this.p=p;
+		this.s=s;
+	}
+	
+	public void doCommand() {
+		p.addSlot(s);
+	}
+	
+	public void undoCommand() {
+		p.removeSlot(s);
+		p.getPageSelectedSlots().removeSlotFromSelection(s);
+	}
+
+	@Override
+	public Page getPage() {
+		return p;
+	}
+}

@@ -1,0 +1,52 @@
+package gui;
+
+import java.awt.Color;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+
+import gui.listeners.action.TB1Listener;
+
+public class ToolBar extends JToolBar {
+
+	public ToolBar() {
+		initialise();
+	}
+	
+	public void initialise() {
+		JButton dugme1 = new JButton();
+		JButton dugme2 = new JButton();
+		JButton dugme3 = new JButton();
+		JButton dugme4 = new JButton();
+		
+		dugme1.setToolTipText("New");
+		dugme2.setToolTipText("Open");
+		dugme3.setToolTipText("Save");
+		dugme4.setToolTipText("Close");
+		
+		dugme1.setIcon(new ImageIcon("images/tb-new.png"));
+		dugme2.setIcon(new ImageIcon("images/tb-open.png"));
+		dugme3.setIcon(new ImageIcon("images/tb-save.png"));
+		dugme4.setIcon(new ImageIcon("images/tb-close.png"));
+		
+		dugme1.addActionListener(new TB1Listener());
+		dugme2.addActionListener(new TB1Listener());
+		dugme3.addActionListener(new TB1Listener());
+		dugme4.addActionListener(new TB1Listener());
+		
+		add(dugme1);
+		addSeparator();
+		add(dugme2);
+		addSeparator();
+		add(dugme3);
+		addSeparator();
+		add(dugme4);
+		
+		setFloatable(true);
+		setBackground(new Color(0xDFDDC7));
+		
+	}
+
+}

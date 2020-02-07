@@ -1,0 +1,273 @@
+package tree.model;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+
+import javax.swing.tree.TreeNode;
+
+import observer.interfaces.IOListener;
+import observer.interfaces.IObserver;
+
+public class Document implements TreeNode,IObserver,Serializable,ITreeNodeSerialization{
+
+	transient private ArrayList<IOListener> listeners;
+
+	private ArrayList<Page> pages;
+	private String name;
+	transient private Project parentNode;
+
+	private NewNodeNumberSet numbers;
+	private int newDocumentNumber;
+	private boolean erased;
+	private boolean closed;
+	
+	private boolean changed;
+	File location;
+
+	public Document(Project parentNode, String name, int number) {
+		this.erased=false;
+		this.closed=true;
+		this.pages = new ArrayList<Page>();
+		this.parentNode = parentNode;
+		this.name = name;
+		this.newDocumentNumber = number;
+		this.numbers = new NewNodeNumberSet();
+		this.location = null;
+		this.changed = true;
+	}
+
+
+
+	public void addPage() {
+
+		int number = numbers.getNumber();
+		String pageName = "New Page " + number ;
+		Page pg =  new Page(this, pageName, number);
+		pages.add(pg);
+		registerChange();
+		notifyObserver(this);
+	}
+
+	public void addPage(String pageName) {
+		Page pg= new Page(this, pageName, 0);
+		pages.add(pg);
+		registerChange();
+		notifyObserver(this);
+	}
+	
+	public void addPage(Page pg) {
+		pg.setParentNode(this);
+		if(pg.toString()==null) {
+			int number = numbers.getNumber();
+			String documentName= "New Page " + number;
+			pg.renamePage(documentName);
+			pg.setNumber(number);
+		}
+		pages.add(pg);
+		registerChange();
+		notifyObserver(this);
+	}
+	public void removeDocument() {
+		erased=true;
+		setClosed(true);
+		registerChange();
+		parentNode.removeDocument(this);
+	}
+	protected void setNumber(int number) {
+		newDocumentNumber = number;
+	}
+	protected void removePage(Page pg) {
+		
+		if(pg==null)
+			return;
+		if(pages.isEmpty())
+			return;
+		if(!pages.contains(pg))
+			return;
+		
+		if(pg.getNewPageNumber()!=0)
+			numbers.giveBackNumber(pg.getNewPageNumber());
+		
+		pages.remove(pg);
+		registerChange();
+		notifyObserver(this);
+		
+	}
+
+
+	public void renameDocument(String name) {
+		this.name=name;
+		if(newDocumentNumber != 0) {
+			parentNode.returnNumber(newDocumentNumber);
+			newDocumentNumber = 0;
+		}
+		registerChange();
+		notifyObserver(this);
+	}
+	
+	protected void returnNumber(int number) {
+		this.numbers.giveBackNumber(number);
+	}
+	
+	protected void setParentNode(Project prj) {
+		this.parentNode =  prj;
+	}
+	
+	public void setClosed(boolean closed) {
+		this.closed=closed;
+		notifyObserver(this);
+	}
+
+	public boolean getClosed() {
+		return closed;
+	}
+
+	@Override
+	public TreeNode getChildAt(int childIndex) {
+
+		if(pages.isEmpty())
+			return null;
+		if(childIndex<0)
+			return null;
+		if(pages.size()<childIndex)
+			return null;
+
+		return pages.get(childIndex);
+	}
+
+	@Override
+	public int getChildCount() {
+		return pages.size();
+	}
+
+	@Override
+	public TreeNode getParent() {
+		return parentNode;
+	}
+
+	@Override
+	public int getIndex(TreeNode node) {
+
+		if(node instanceof Page)
+			if(pages.contains(node))
+				return pages.indexOf((Page)node);
+
+		return -1;
+	}
+
+	@Override
+	public boolean getAllowsChildren() {
+		return true;
+	}
+
+	@Override
+	public boolean isLeaf() {
+		return false;
+	}
+
+	@Override
+	public Enumeration<? extends TreeNode> children() {
+
+		if(pages.isEmpty())
+			return null;
+		return Collections.enumeration(pages);
+	}
+
+	@Override
+	public void addObserver(IOListener listener) {
+
+		if(listener == null)
+			return;
+		if(listeners == null)
+			listeners = new ArrayList<IOListener>();
+		if(listeners.contains(listener))
+			return;
+		listeners.add(listener);
+
+	}
+
+	@Override
+	public void removeObserver(IOListener listener) {
+
+		if(listener == null)
+			return;
+		if(!listeners.contains(listener))
+			return;
+		listeners.remove(listener);
+
+	}
+
+	@Override
+	public void notifyObserver(Object event) {
+
+		if(event == null)
+			return;
+		
+		registerChange();
+		if(listeners == null)
+			return;
+
+		ArrayList<IOListener> temporaryListeners = new ArrayList<IOListener>();
+		for(IOListener listener:listeners) temporaryListeners.add(listener);
+		for(IOListener listener:temporaryListeners) {
+			listener.update(event);
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return this.name;
+	}
+	
+	public boolean getErased() {
+		return erased;
+	}
+	
+	
+	
+	public void registerChange() {
+		this.changed=true;
+		parentNode.registerChange();
+	}
+	
+	public void setChanged(boolean changed) {
+		this.changed=changed;
+	}
+	
+	private Object readResolve(){
+		 listeners = new ArrayList<IOListener>();
+		 parentNode = null;
+		 return this;
+	}
+
+
+
+	@Override
+	public void setLoaction(File f) {
+		this.location=f;
+		
+	}
+
+
+
+	@Override
+	public File getLocation() {
+		return location;
+	}
+
+
+
+	@Override
+	public boolean isChanged() {
+		return changed;
+	}
+
+
+
+	public int getNewDocumentNumber() {
+		return newDocumentNumber;
+	}
+}

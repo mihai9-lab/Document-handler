@@ -1,0 +1,80 @@
+package sharing.mediator;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+
+import tree.model.Document;
+import tree.model.Project;
+
+public class Mediator {
+	
+	private ArrayList<Document> documents;
+	
+	public Mediator() {
+		documents = new ArrayList<Document>();
+		
+	}
+	
+	public void addNew(Document doc) {
+		boolean b = true;
+		for(Document d: documents)
+			if(doc==d)
+				b=false;
+		if(b)
+			documents.add(doc);
+		
+		Project prj = new ProjectListDialog().open();
+		if(prj==null)
+			return;
+		Document n = (Document)cloneAny(doc);
+		n.setMediator(this);
+		documents.add(n);
+		prj.add(n);
+		
+	}
+	
+	public void mediate(Document doc,MediatorUpdates ACTION, Object o ) {
+		if(ACTION == MediatorUpdates.DOCUMENT_NAME)
+			changeDocumentName();
+		else if(ACTION == MediatorUpdates.DOCUMENT_NEW_PAGE)
+			addNewPage();
+		else if(ACTION == MediatorUpdates.PAGE_NAME)
+			changePageName();
+		else if(ACTION == MediatorUpdates.PAGE_NEW_COMMAND)
+			exchangePages();
+	}
+	
+	private void changeDocumentName() {
+		
+	}
+	
+	private void addNewPage() {
+		
+	}
+	
+	private void changePageName() {
+		
+	}
+	
+	private void exchangePages() {
+		
+	}
+	
+	private static Object cloneAny(Object object) {
+		try {
+		     ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+		     ObjectOutputStream outStream = new ObjectOutputStream(byteOutStream);
+		     outStream.writeObject(object);
+		     ByteArrayInputStream byteInputStream = new ByteArrayInputStream(byteOutStream.toByteArray());
+		     ObjectInputStream inStream = new ObjectInputStream(byteInputStream);
+		     return inStream.readObject();
+		   }
+		catch (Exception e) {
+		     e.printStackTrace();
+		     return null;
+		   }
+	}
+}

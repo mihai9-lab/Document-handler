@@ -1,0 +1,64 @@
+package gui;
+
+import javax.swing.JFrame;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTree;
+
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
+import tree.model.WorkspaceModel;
+import actions.ActionManager;
+public class Frame extends JFrame {
+	
+	private static Frame fr=null;
+	
+	private WorkspaceModel workspaceModel;
+    private WorkspaceTree workspaceTree;
+	private ActionManager actionManager;
+	
+	private Frame() {
+		initialiseFrame();
+	}
+	
+	public static Frame getInstance() {
+		if(fr==null) fr=new Frame();
+		return fr;
+	}
+	
+	private void initialiseFrame() {
+		Toolkit kit = Toolkit.getDefaultToolkit();
+        Dimension screenSize = kit.getScreenSize();
+        int screenHeight = screenSize.height;
+        int screenWidth = screenSize.width;
+        setSize(screenWidth / 2, screenHeight / 2);
+        setTitle("GeRuDok");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        MenuBar menu=new MenuBar();
+        actionManager=new ActionManager();
+        ToolBar toolBar = new ToolBar();
+        this.setJMenuBar(menu);
+        this.add(toolBar, BorderLayout.NORTH);
+        workspaceTree = new WorkspaceTree();
+		workspaceModel = new WorkspaceModel();
+		workspaceTree.setModel(workspaceModel);
+		
+        JScrollPane treePanel = new JScrollPane(workspaceTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JPanel projectPanel = new JPanel();
+        SplitPane sp = new SplitPane(this.getWidth()/3,treePanel,projectPanel);
+		sp.setOneTouchExpandable(true);
+		sp.setDividerLocation(this.getWidth()/3);
+		this.add(sp);
+    }
+	
+	public WorkspaceTree getWorkspaceTree() {
+		return workspaceTree;
+	}
+}

@@ -1,0 +1,28 @@
+package tree.model.geometry;
+
+import view.geometry_painter.RectanglePainter;
+
+public class RectangleGeometry extends Geometry {
+
+	private double angle2;
+	
+	public RectangleGeometry(double xCenter, double yCenter, double radius, double angle,double angle2) {
+		super(xCenter, yCenter, radius, angle);
+		this.angle2 = angle2;
+		geometryPainter = new RectanglePainter(this);
+	}
+	
+	public double getAngle2() {
+		return angle2;
+	}
+	
+	public void setAngle2(double angle2) {
+		this.angle2 = angle2;
+	}
+	
+	public void rotate(double teta) {
+		this.setAngle(this.getAngle()+teta);
+		this.angle2 += teta;
+	}
+	
+}

@@ -1,0 +1,24 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+import error_handling.ExceptionHandler;
+import gui.Frame;
+import tree.model.ITreeNodeSerialization;
+
+public class DeleteSlotAction extends AbstractIconAction{
+
+	public DeleteSlotAction() {
+		putValue(SMALL_ICON, loadIcon("images/palette-delete.png"));
+		putValue(NAME, "Delete Shape");
+		putValue(SHORT_DESCRIPTION, "Delete Shape");
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		gui.Frame.getInstance().getIStateManager().setDeleteState();
+	}
+}

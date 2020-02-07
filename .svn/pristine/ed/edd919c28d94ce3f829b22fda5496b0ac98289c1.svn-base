@@ -1,0 +1,111 @@
+package view;
+
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.util.ArrayList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import observer.interfaces.IOListener;
+import tree.model.Document;
+import tree.model.Page;
+import tree.model.Project;
+
+public class DocumentView extends JScrollPane implements IOListener {
+	
+	private Document d;
+	
+	private ProjectView pV;
+	
+	private String name;
+	
+	private JPanel pages;
+	
+	private GridBagConstraints c = new GridBagConstraints();;
+	
+	boolean updateParent;
+	
+	public DocumentView(ProjectView pV) {
+		super(new JPanel(),JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		pages = new JPanel();
+		updateParent=true;
+		c = new GridBagConstraints();
+		pages.setLayout(new FlowLayout(FlowLayout.CENTER,50,20));
+		this.setViewportView(pages);
+		this.pV=pV;
+		name = "placeholder";
+		d=null;
+	}
+	
+	@Override
+	public void update(Object o) {
+		if(o instanceof Document) {
+			Document d = (Document)(o);
+			if(d.getErased() || d.getClosed()) {
+				clear();
+			}
+			else {
+				updateParent = false;
+				clear();
+				set(d);
+				updateParent = true;
+			}
+		}
+	}
+	
+	public void clear() {
+		int n = pages.getComponentCount();
+		ArrayList<PageView> tempList = new ArrayList<PageView>();
+		for(int i=0;i<n;i++) {
+			Component c = pages.getComponent(i);
+			if(c instanceof PageView) {
+				PageView pV = (PageView)(c);
+				tempList.add(pV);
+			}
+		}
+		for(PageView pV:tempList) pV.clear();
+		if(updateParent) pV.removeFromParrent(this);
+		if(this.d!=null) {
+			this.d.removeObserver(this);
+			this.d = null;
+		}
+		pages.removeAll();
+		name = "placeholder";
+	}
+	
+	public void set(Document d) {
+		if(d!=null && !d.getClosed()) {
+			this.d=d;
+			d.addObserver(this);
+			name = (((Project)(d.getParent())).toString()) + " - " + d.toString();
+			int n=d.getChildCount();
+			for(int i=0;i<n;i++) {
+				Page p = (Page)(d.getChildAt(i));
+				if(!p.getErased()) {
+					PageView pV = new PageView(this);
+					pV.set(p);
+				}
+			}
+			if(updateParent) pV.addToParrent(this);
+			pV.revalidate();
+			pV.repaint();
+			pV.resetTitle(this);
+		}
+	}
+	
+	public void removeFromParrent(PageView pV) {
+		pages.remove(pV);
+	}
+	
+	public void addToParrent(PageView pV) {
+		pages.add(pV);
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public Document getDocument() {
+		return d;
+	}
+}

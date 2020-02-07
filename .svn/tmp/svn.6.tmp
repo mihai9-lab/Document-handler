@@ -1,0 +1,183 @@
+package view;
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.util.ArrayList;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ScrollPaneConstants;
+
+import observer.interfaces.IOListener;
+import tree.model.Document;
+import tree.model.Page;
+import tree.model.Project;
+
+public class DocumentView extends JSplitPane implements IOListener {
+	
+	private Document d;
+	
+	private int location = (int)(420*gui.Frame.getInstance().getIConfigurations().getMinipageScalingCoef())+41;
+	
+	private ProjectView pV;
+	
+	private String name;
+	
+	private JPanel pages;
+	
+	private PageView slView;
+	
+	private BoxLayout bL;
+	
+	private JScrollPane pageList;
+	
+	private JPanel rPane;
+	
+	private boolean updateParent;
+	
+	private boolean changeSelection;
+	
+	public DocumentView(ProjectView pV) {
+		pages = new JPanel();
+		rPane = new JPanel();
+		pageList = new JScrollPane();
+		this.setDividerLocation(location);
+		rPane.setLayout(new FlowLayout(FlowLayout.CENTER,7,7));
+		updateParent=true;
+		slView = null;
+		pages.setLayout(new FlowLayout(FlowLayout.CENTER,7,7));
+		pageList.add(pages);
+		this.setLeftComponent(pageList);
+		this.setRightComponent(rPane);
+		this.pV=pV;
+		name = "placeholder";
+		d=null;
+	}
+	
+	@Override
+	public void update(Object o) {
+		if(o instanceof Document) {
+			Document d = (Document)(o);
+			if(d.getErased()) {
+				clear();
+			}
+			else {
+				updateParent = false;
+				clear();
+				set(d);
+				updateParent = true;
+			}
+		}
+	}
+	
+	public void clear() {
+		int n = pages.getComponentCount();
+		ArrayList<MiniPageView> tempList = new ArrayList<MiniPageView>();
+		for(int i=0;i<n;i++) {
+			Component c = pages.getComponent(i);
+			if(c instanceof MiniPageView) {
+				MiniPageView pV = (MiniPageView)(c);
+				tempList.add(pV);
+			}
+		}
+		for(MiniPageView pV:tempList) pV.clear();
+		if(updateParent) pV.removeFromParrent(this);
+		if(this.d!=null) {
+			this.d.removeObserver(this);
+			this.d = null;
+		}
+		pages.removeAll();
+		rPane.removeAll();
+		if(slView!=null) {
+			slView.clear();
+			slView=null;
+		}
+		name = "placeholder";
+	}
+	
+	public void set(Document d) {
+		if(d!=null) {
+			this.d=d;
+			d.addObserver(this);
+			name = (((Project)(d.getParent())).toString()) + " - " + d.toString();
+			int n=d.getChildCount();
+			for(int i=0;i<n;i++) {
+				Page p = (Page)(d.getChildAt(i));
+				if(!p.getErased()) {
+					MiniPageView mpV = new MiniPageView(this);
+					mpV.set(p);
+					if(slView==null) selectPage(p);
+				}
+			}
+			location = (int)(420*gui.Frame.getInstance().getIConfigurations().getMinipageScalingCoef())+41;
+			Dimension dim = new Dimension(location,10+pages.getComponentCount()*(8+(int)(594*gui.Frame.getInstance().getIConfigurations().getMinipageScalingCoef())));
+			pages.setSize(dim);
+			pages.setMaximumSize(dim);
+			pages.setPreferredSize(dim);
+			pageList = new JScrollPane(pages,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			this.setLeftComponent(pageList);
+			if(updateParent) pV.addToParrent(this);
+			pV.revalidate();
+			pV.repaint();
+			pV.resetTitle(this);
+		}
+	}
+	
+	public void selectPage(Page p) {
+		if(slView!=null) {
+			slView.getPage().setSelected(false);
+			slView.clear();
+			slView=null;
+		}
+		p.setSelected(true);
+		slView = new PageView(this);
+		slView.set(p);
+		rPane.removeAll();
+		rPane.add(slView);
+		this.setRightComponent(rPane);
+	}
+	
+	public void removeFromParrent(Component c) {
+		if(c instanceof PageView) {
+			slView = null;
+		}
+		else {
+			pages.remove((MiniPageView)c);
+		}
+	}
+	
+	public void addToParrent(Component c) {
+		if(c instanceof PageView) {
+			slView = (PageView)(c);
+		}
+		else {
+			pages.add((MiniPageView)c);
+		}
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public Document getDocument() {
+		return d;
+	}
+	
+	public PageView getPageView() {
+		return slView;
+	}
+	
+	public void refresh() {
+		Page p = null;
+		if(slView != null) p = slView.getPage();
+		updateParent = false;
+		Document d = this.d;
+		this.clear();
+		this.set(d);
+		updateParent = true;
+		if(p != null) this.selectPage(p);
+	}
+}

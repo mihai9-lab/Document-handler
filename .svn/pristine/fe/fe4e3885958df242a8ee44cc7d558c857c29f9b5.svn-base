@@ -1,0 +1,140 @@
+package tree.model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+
+import javax.swing.tree.TreeNode;
+
+import observer.interfaces.IOListener;
+import observer.interfaces.IObserver;
+
+public class Workspace implements TreeNode,IObserver {
+
+	private ArrayList<IOListener> listeners;
+	
+	private ArrayList<Project> projects;
+	private String name;
+	
+	public Workspace() {
+		this.projects = new ArrayList<Project>();
+		this.name = "Workspace";
+	}
+	
+	public void addProject() {
+		int newProjectCount=0;
+		
+		for(Project p:projects) 
+			if(p.getNewProjectStatus())
+				newProjectCount++;
+		newProjectCount++;
+		
+		String projectName= "New Project " + newProjectCount;
+		Project prj =new Project(this,projectName,true);
+		projects.add(prj);
+		notifyObserver(prj);
+	}
+	
+	public void addProject(String projectName) {
+		Project prj =new Project(this,projectName,false);
+		projects.add(prj);
+		notifyObserver(prj);
+	}
+	
+	public void removeProject(Project prj) {
+		if(prj==null)
+			return;
+		if(projects.isEmpty())
+			return;
+		
+		if(projects.contains(prj))
+			projects.remove(prj);
+		notifyObserver(prj);
+	}
+	
+	@Override
+	public TreeNode getChildAt(int childIndex) {
+		
+		if(projects.isEmpty())
+			return null;
+		if(childIndex < 0)
+			return null;
+		if(projects.size() < childIndex)
+			return null;
+		
+		return projects.get(childIndex);
+	}
+
+	@Override
+	public int getChildCount() {
+		
+		return projects.size();
+	}
+
+	@Override
+	public TreeNode getParent() {
+		
+		return null;
+	}
+
+	@Override
+	public int getIndex(TreeNode node) {
+		
+		if(node instanceof Project)
+			return projects.indexOf((Project)node);
+		
+		return -1;
+	}
+
+	@Override
+	public boolean getAllowsChildren() {
+		return true;
+	}
+
+	@Override
+	public boolean isLeaf() {
+		return false;
+	}
+
+	@Override
+	public Enumeration<Project> children() {
+		
+		if(projects.isEmpty())
+			return null;
+		return Collections.enumeration(projects);
+	}
+	
+	@Override
+	public void addObserver(IOListener listener) {
+
+		if(listener == null)
+			return;
+		if(listeners == null)
+			listeners = new ArrayList<IOListener>();
+		if(listeners.contains(listener))
+			return;
+		listeners.add(listener);
+		
+	}
+	@Override
+	public void removeObserver(IOListener listener) {
+		
+		if(listener == null)
+			return;
+		if(!listeners.contains(listener))
+			return;
+		listeners.remove(listener);
+		
+	}
+	@Override
+	public void notifyObserver(Object event) {
+		if(event == null)
+			return;
+		if(listeners == null)
+			return;
+		
+		for(IOListener listener:listeners) 
+			listener.update(event);
+	}
+
+}

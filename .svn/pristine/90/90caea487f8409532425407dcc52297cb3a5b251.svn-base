@@ -1,0 +1,92 @@
+package gui;
+
+import javax.swing.JCheckBox;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JToolBar.Separator;
+
+import gui.listeners.action.ToolBarAppearanceActionListener;
+
+
+public class MenuBar extends JMenuBar{
+	private JMenu menuFile;
+	private JMenu menuWindow;
+	private JMenu menuToolbarAppearance;
+	private JMenu menuHelp;
+	private ToolBarAppearanceActionListener t;
+	
+	public MenuBar () {
+		initialise();
+	}
+	
+	private void initialise() {
+		menuFile = new JMenu("File");
+	    menuWindow = new JMenu("Window");
+	    menuToolbarAppearance = new JMenu("Toolbar Appearance");
+	    menuHelp = new JMenu("Help");
+	    
+	    t = new ToolBarAppearanceActionListener();
+	    
+	    menuFile.add(gui.Frame.getInstance().getActionManager().getNewNodeAction());
+	    menuFile.add(gui.Frame.getInstance().getActionManager().getRenameNodeAction());
+	    menuFile.add(gui.Frame.getInstance().getActionManager().getDeleteNodeAction());
+	    menuFile.add(new Separator());
+	    
+	    menuFile.add(gui.Frame.getInstance().getActionManager().getOpenNodeAction());
+	    menuFile.add(gui.Frame.getInstance().getActionManager().getSaveNodeAction());
+	    menuFile.add(gui.Frame.getInstance().getActionManager().getSaveAsNodeAction());
+	    menuFile.add(new Separator());
+	    
+	    menuFile.add(gui.Frame.getInstance().getActionManager().getCloseTabAction());
+	    menuFile.add(gui.Frame.getInstance().getActionManager().getCloseAllTabsAction());
+	    menuHelp.add(gui.Frame.getInstance().getActionManager().getAboutDialogAction());
+	    
+	    JCheckBox openNodeBox = new JCheckBox("Open");
+	    openNodeBox.setSelected(gui.Frame.getInstance().getIConfigurations().isActionInToolbar(gui.Frame.getInstance().getActionManager().getOpenNodeAction()));
+	    openNodeBox.addActionListener(t);
+	    
+	    JCheckBox saveNodeBox = new JCheckBox("Save");
+	    saveNodeBox.setSelected(gui.Frame.getInstance().getIConfigurations().isActionInToolbar(gui.Frame.getInstance().getActionManager().getSaveNodeAction()));
+	    saveNodeBox.addActionListener(t);
+	    
+	    JCheckBox newNodeBox = new JCheckBox("New");
+	    newNodeBox.setSelected(gui.Frame.getInstance().getIConfigurations().isActionInToolbar(gui.Frame.getInstance().getActionManager().getNewNodeAction()));
+	    newNodeBox.addActionListener(t);
+	    
+	    JCheckBox renameNodeBox = new JCheckBox("Rename");
+	    renameNodeBox.setSelected(gui.Frame.getInstance().getIConfigurations().isActionInToolbar(gui.Frame.getInstance().getActionManager().getRenameNodeAction()));
+	    renameNodeBox.addActionListener(t);
+	    
+	    JCheckBox deleteNodeBox = new JCheckBox("Delete");
+	    deleteNodeBox.setSelected(gui.Frame.getInstance().getIConfigurations().isActionInToolbar(gui.Frame.getInstance().getActionManager().getDeleteNodeAction()));
+	    deleteNodeBox.addActionListener(t);
+	    
+	    JCheckBox closeTabBox = new JCheckBox("Close Tab");
+	    closeTabBox.setSelected(gui.Frame.getInstance().getIConfigurations().isActionInToolbar(gui.Frame.getInstance().getActionManager().getCloseTabAction()));
+	    closeTabBox.addActionListener(t);
+	    
+	    JCheckBox closeAllTabsBox = new JCheckBox("Close All Tabs");
+	    closeAllTabsBox.setSelected(gui.Frame.getInstance().getIConfigurations().isActionInToolbar(gui.Frame.getInstance().getActionManager().getCloseAllTabsAction()));
+	    closeAllTabsBox.addActionListener(t);
+	    
+	    menuToolbarAppearance.add(openNodeBox);
+	    
+	    menuToolbarAppearance.add(saveNodeBox);
+	    
+	    menuToolbarAppearance.add(newNodeBox);
+	    
+	    menuToolbarAppearance.add(deleteNodeBox);
+	    
+	    menuToolbarAppearance.add(renameNodeBox);
+	    
+	    menuToolbarAppearance.add(closeTabBox);
+	    
+	    menuToolbarAppearance.add(closeAllTabsBox);
+	    
+	    menuWindow.add(menuToolbarAppearance);
+	    
+	    add(menuFile);
+	    add(menuWindow);
+	    add(menuHelp);
+	}
+}

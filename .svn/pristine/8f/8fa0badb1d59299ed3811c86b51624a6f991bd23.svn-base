@@ -1,0 +1,33 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.TreePath;
+
+import gui.Frame;
+import tree.model.Project;
+import tree.model.Workspace;
+public class NewNodeAction extends AbstractIconAction {
+	
+	public NewNodeAction() {
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
+		        KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/toolbar-new.png"));
+		putValue(NAME, "New");
+		putValue(SHORT_DESCRIPTION, "New (Ctrl + N)");
+	}
+
+	public void actionPerformed(ActionEvent arg0) {
+		TreePath tp = gui.Frame.getInstance().getWorkspaceTree().getSelectionPath();
+		if(tp!=null) {
+			Object node = tp.getLastPathComponent();
+			if(node instanceof Workspace) ((Workspace)(node)).addProject();
+			else if(node instanceof Project) ((Project)(node)).addDocument(); //Za sada ima bag, dodati dokument se ne prikazuje
+			SwingUtilities.updateComponentTreeUI(gui.Frame.getInstance().getWorkspaceTree());
+		}
+	}
+
+}

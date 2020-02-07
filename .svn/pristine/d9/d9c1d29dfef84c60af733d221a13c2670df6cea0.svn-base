@@ -1,0 +1,166 @@
+package clipboard;
+
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+
+import javax.swing.SwingUtilities;
+import javax.swing.tree.TreeNode;
+
+import command.DeleteCommand;
+import command.PasteCommand;
+import gui.Frame;
+import tree.model.Document;
+import tree.model.Page;
+import tree.model.PageSelectedSlots;
+import tree.model.Project;
+import tree.model.Slot;
+import tree.model.Workspace;
+
+public class ClipboardManager implements IClipboard {
+
+	private Clipboard clipboard;
+	
+	public ClipboardManager() {
+		clipboard = new Clipboard("GeRuDokCB");
+	}
+	@Override
+	public void cut() throws UnsupportedFlavorException, IOException {
+		
+		
+		
+		Page p = Frame.getInstance().getProjectView().getOpenedPage();
+		
+		if(p != null && p.getPageSelectedSlots().hasElements()) {
+			clipboard.setContents((Transferable)cloneAny(p.getPageSelectedSlots()), this);
+			gui.Frame.getInstance().getICommandManager().addCommand(new DeleteCommand(p,p.getPageSelectedSlots()));
+		}
+		else {
+			TreeNode node = (TreeNode)Frame.getInstance().getWorkspaceTree().getLastSelectedPathComponent();
+			if(node instanceof Workspace || node == null)
+				return;
+			clipboard.setContents((Transferable)cloneAny(node), this);	
+			if(node instanceof Project) ((Project)node).removeProject();
+			else if(node instanceof Document)((Document)node).removeDocument();
+			else if(node instanceof Page)((Page)node).removePage();
+		}
+		
+	}
+
+	@Override
+	public boolean copy() {
+		Page p = Frame.getInstance().getProjectView().getOpenedPage();
+		
+		if(p != null && p.getPageSelectedSlots().hasElements()) {
+			clipboard.setContents((Transferable)cloneAny(p.getPageSelectedSlots()), this);
+		}
+		else {
+			TreeNode node = (TreeNode)Frame.getInstance().getWorkspaceTree().getLastSelectedPathComponent();
+			if(node instanceof Workspace || node == null)
+				return false;
+			else 
+				clipboard.setContents((Transferable)cloneAny(node), this);	
+			
+		}
+		
+		return true;
+	}
+
+	@Override
+	public void paste() throws UnsupportedFlavorException, IOException {
+		Transferable content = clipboard.getContents(null);
+		
+		if(content.isDataFlavorSupported(Project.projectFlavor))
+			pasteProject((Project)content.getTransferData(Project.projectFlavor));
+		else if(content.isDataFlavorSupported(Document.documentFlavor))
+			pasteDocument((Document)content.getTransferData(Document.documentFlavor));
+		else if(content.isDataFlavorSupported(Page.pageFlavor))
+			pastePage((Page)content.getTransferData(Page.pageFlavor));
+		else if(content.isDataFlavorSupported(PageSelectedSlots.slotsFlavor))
+			pasteSlots((ArrayList<Slot>)content.getTransferData(PageSelectedSlots.slotsFlavor));
+	}
+	
+	
+
+	
+	
+	private void pasteProject(Project prj) {
+		Project n = (Project)cloneAny(prj);
+		((Workspace)Frame.getInstance().getWorkspaceTree().getModel().getRoot()).add(n);
+	}
+	
+	private void pasteDocument(Document doc) {
+		Document n = (Document)cloneAny(doc);
+		TreeNode node = (TreeNode)Frame.getInstance().getWorkspaceTree().getLastSelectedPathComponent();
+		
+		Workspace ws = (Workspace)Frame.getInstance().getWorkspaceTree().getModel().getRoot();
+		if(node instanceof Workspace || node == null) {
+			String s = "Project (" + n.toString().toLowerCase() + ")"; 
+			Project prj = new Project(null, s, 0);
+			ws.add(prj);
+			prj.add(n);
+			
+		}
+		else {
+			if(node instanceof Page)
+				node = ((Page)node).getParent();
+			if(node instanceof Document)
+				node = ((Document)node).getParent();
+			
+			((Project)node).add(n);
+		}
+	}
+	private void pastePage(Page pg) {
+		TreeNode node =(TreeNode)Frame.getInstance().getWorkspaceTree().getLastSelectedPathComponent();
+		if(node instanceof Page)
+			node=node.getParent();
+		if(node instanceof Document) {
+			Page n = (Page) cloneAny(pg);
+			((Document) node).add(n);
+		}
+	}
+	private void pasteSlots(ArrayList<Slot> slots) {
+		Page p = Frame.getInstance().getProjectView().getOpenedPage();
+		if(p == null)
+			return;
+		int counter=0;
+		for(Slot s: slots) {
+			Slot sn = (Slot)cloneAny(s);
+			sn.getGeometry().setXCenter(sn.getGeometry().getXCenter()+10);
+			sn.getGeometry().setYCenter(sn.getGeometry().getYCenter()+10);
+			slots.set(counter++, sn);
+			
+		}
+		gui.Frame.getInstance().getICommandManager().addCommand(new PasteCommand(p,(ArrayList<Slot>)cloneAny(slots)));
+	}
+	
+	
+	
+	private static Object cloneAny(Object object) {
+		try {
+		     ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+		     ObjectOutputStream outStream = new ObjectOutputStream(byteOutStream);
+		     outStream.writeObject(object);
+		     ByteArrayInputStream byteInputStream = new ByteArrayInputStream(byteOutStream.toByteArray());
+		     ObjectInputStream inStream = new ObjectInputStream(byteInputStream);
+		     return inStream.readObject();
+		   }
+		catch (Exception e) {
+		     e.printStackTrace();
+		     return null;
+		   }
+	}
+	
+	@Override
+	public void lostOwnership(Clipboard clipboard, Transferable contents) {
+		System.out.println("lost ownership");
+		
+	}
+}

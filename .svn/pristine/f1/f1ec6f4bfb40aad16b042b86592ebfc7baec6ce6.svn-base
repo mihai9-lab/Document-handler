@@ -1,0 +1,85 @@
+package tree.model;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+
+import javax.swing.tree.TreeNode;
+
+import observer.interfaces.IOListener;
+import observer.interfaces.IObserver;
+
+public class Page implements TreeNode,IObserver{
+
+	private ArrayList<IOListener> listeners;
+	
+	private String name;
+	private Document parentNode;
+	private boolean newPageStatus;
+	
+	public Page(Document parentNode, String name, boolean status) {
+		this.parentNode=parentNode;
+		this.name=name;
+		this.newPageStatus=status;
+	}
+	
+	public boolean getNewPageStatus() {
+		return newPageStatus;
+	}
+	
+	@Override
+	public TreeNode getChildAt(int childIndex) {
+		
+		return null;
+	}
+
+	@Override
+	public int getChildCount() {
+		return 0;
+	}
+
+	@Override
+	public TreeNode getParent() {
+		
+		return parentNode;
+	}
+
+	@Override
+	public int getIndex(TreeNode node) {
+		return -1;
+	}
+
+	@Override
+	public boolean getAllowsChildren() {
+		return false;
+	}
+
+	@Override
+	public boolean isLeaf() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public Enumeration<? extends TreeNode> children() {
+		return null;
+	}
+
+	@Override
+	public void addObserver(IOListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeObserver(IOListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyObserver(Object event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

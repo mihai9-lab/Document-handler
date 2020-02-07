@@ -1,0 +1,10 @@
+package clipboard;
+
+import java.awt.datatransfer.ClipboardOwner;
+
+public interface IClipboard extends ClipboardOwner{
+	
+	public void cut();
+	public void copy();
+	public void paste();
+}

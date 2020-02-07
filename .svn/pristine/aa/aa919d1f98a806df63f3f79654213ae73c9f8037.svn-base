@@ -1,0 +1,10 @@
+1) Crtanje:
+	Klikom na jednu tačku se određuje početak (za pravougaonik jedno teme, za krug centar, za trougao centar opisanog kruga)
+	Prevlačenjem se oblik "iscrtava" (tj. prikazuje se kako bi izgledao ako bi u tom trenutku pustili miša)
+	
+	Za transformacije, potrebno je kliknuti select tool:
+		Za transliranje, potrebno je oblik uhvatiti u centru, dok je za rotaciju i skaliranje neophodno uhvatiti oblik u okolini ivice
+
+2) Konfigurisanje toolbar-a:
+	U meniju Window->Appearance je moguće selektovati koje akcije su prikazane u toolbar-u.
+	Skup akcija koje smo izabrali je zapamćen pri prekidu rada programa.

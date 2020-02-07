@@ -1,0 +1,14 @@
+package gui;
+
+import javax.swing.JTree;
+
+public class Tree extends JTree{
+	
+	public Tree() {
+		initialise();
+	}
+	
+	private void initialise() {
+		
+	}
+}

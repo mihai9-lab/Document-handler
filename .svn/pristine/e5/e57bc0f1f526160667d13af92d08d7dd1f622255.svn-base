@@ -1,0 +1,20 @@
+package gui.listeners.change;
+
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import view.DocumentView;
+
+public class DocumentViewsSelectionListener implements ChangeListener {
+    
+	public void stateChanged(ChangeEvent e) {
+        JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+        int selectedIndex = tabbedPane.getSelectedIndex();
+        int n = tabbedPane.getComponentCount();
+        for(int i=0;i<n;i++) {
+        	((DocumentView)tabbedPane.getComponent(i)).getDocument().setClosed(true);
+        }
+    	((DocumentView)tabbedPane.getComponent(selectedIndex)).getDocument().setClosed(false);
+    }
+}

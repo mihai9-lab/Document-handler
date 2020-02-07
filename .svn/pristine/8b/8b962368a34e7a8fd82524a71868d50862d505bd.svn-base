@@ -1,0 +1,8 @@
+package serialization;
+
+import tree.model.ITreeNodeSerialization;
+
+public interface ISerialization {
+	void save(ITreeNodeSerialization node);
+	ITreeNodeSerialization open();
+}

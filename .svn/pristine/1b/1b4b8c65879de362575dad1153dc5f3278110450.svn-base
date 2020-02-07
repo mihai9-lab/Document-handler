@@ -1,0 +1,64 @@
+package view;
+
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Enumeration;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
+import observer.interfaces.IOListener;
+import tree.model.Document;
+import tree.model.Project;
+
+public class DocumentView extends JPanel implements IOListener {
+	
+	private Document d;
+	
+	private ProjectView pV;
+	
+	private String name;
+	
+	public DocumentView(ProjectView pV) {
+		this.pV=pV;
+		name="placeholder";
+		d=null;
+	}
+	
+	@Override
+	public void update(Object o) {
+		if(o instanceof Document) {
+			Document d = (Document)(o);
+			if(d.getErased() || d.getClosed()) {
+				clear();
+			}
+			else {
+				clear();
+				set(d);
+			}
+		}
+	}
+	
+	public void clear() {
+		if(this.d!=null) {
+			this.d.removeObserver(this);
+			this.d = null;
+		}
+		name="placeholder";
+		pV.removeFromParrent(this);
+	}
+	
+	public void set(Document d) {
+		if(d!=null && !d.getClosed()) {
+			this.d=d;
+			d.addObserver(this);
+			name=d.toString();
+			pV.addToParrent(this);
+		}
+	}
+	
+	public String getName() {
+		return name;
+	}
+}

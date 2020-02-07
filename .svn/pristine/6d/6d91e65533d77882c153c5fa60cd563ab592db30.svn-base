@@ -1,0 +1,14 @@
+package tree.model;
+
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+public class WorkspaceModel extends DefaultTreeModel {
+	
+	
+	public WorkspaceModel() {
+		super(new Workspace());
+	}
+}

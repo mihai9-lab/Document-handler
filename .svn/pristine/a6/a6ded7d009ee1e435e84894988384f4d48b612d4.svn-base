@@ -1,0 +1,18 @@
+package view.geometry_painter;
+
+import java.awt.geom.Ellipse2D;
+
+import tree.model.geometry.CircleGeometry;
+
+public class CirclePainter extends GeometryPainter {
+	public CirclePainter(CircleGeometry c) {
+		
+		super(c);
+		
+		shape = new Ellipse2D.Double(c.getXCenter()-c.getRadius(), c.getYCenter()-c.getRadius(), 2*c.getRadius(), 2*c.getRadius());
+
+		scaledShape = new Ellipse2D.Double(c.getXCenter()*gui.Frame.getInstance().getIConfigurations().getMinipageScalingCoef()-c.getRadius()*gui.Frame.getInstance().getIConfigurations().getMinipageScalingCoef(), c.getYCenter()*gui.Frame.getInstance().getIConfigurations().getMinipageScalingCoef()-c.getRadius()*gui.Frame.getInstance().getIConfigurations().getMinipageScalingCoef(), 2*c.getRadius()*gui.Frame.getInstance().getIConfigurations().getMinipageScalingCoef(), 2*c.getRadius()*gui.Frame.getInstance().getIConfigurations().getMinipageScalingCoef());
+		
+	}
+	
+}

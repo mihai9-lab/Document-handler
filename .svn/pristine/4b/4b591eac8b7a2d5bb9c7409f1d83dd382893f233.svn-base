@@ -1,0 +1,35 @@
+package gui;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
+import gui.listeners.action.AboutListener;
+
+
+public class MenuBar extends JMenuBar{
+	
+	public MenuBar () {
+		initialise();
+	}
+	
+	private void initialise() {
+		JMenu menuFile=new JMenu("File");
+	    JMenu menuNew =new JMenu("New");
+	    JMenuItem menuItemOpen = new JMenuItem("Open");
+	    JMenuItem menuItemClose = new JMenuItem("Close");
+	    JMenu menuEdit = new JMenu("Edit");
+	    JMenu menuView = new JMenu("View");
+	    JMenu menuHelp = new JMenu("Help");
+	    JMenuItem menuItemAbout = new JMenuItem("About");
+	    menuItemAbout.addActionListener(new AboutListener());
+	    menuFile.add(menuNew);
+	    menuFile.add(menuItemOpen);
+	    menuFile.add(menuItemClose);
+	    menuHelp.add(menuItemAbout);
+	    add(menuFile);
+	    add(menuEdit);
+	    add(menuView);
+	    add(menuHelp);
+	}
+}

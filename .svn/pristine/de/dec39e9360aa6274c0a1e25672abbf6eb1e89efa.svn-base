@@ -1,0 +1,34 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.TreePath;
+
+import tree.model.Document;
+import tree.model.Page;
+import tree.model.Project;
+import tree.model.Workspace;
+
+public class DeleteNodeAction extends AbstractIconAction {
+	public DeleteNodeAction() {
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
+		        KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/toolbar-delete.png"));
+		putValue(NAME, "Delete");
+		putValue(SHORT_DESCRIPTION, "Delete (Ctrl + D)");
+	}
+
+	public void actionPerformed(ActionEvent arg0) {
+		TreePath tp = gui.Frame.getInstance().getWorkspaceTree().getSelectionPath();
+		if(tp!=null) {
+			Object node = tp.getLastPathComponent();
+			if(node instanceof Project) ((Project)(node)).removeProject();
+			else if(node instanceof Document) ((Document)(node)).removeDocument();
+			else if(node instanceof Page) ((Page)(node)).removePage();
+			SwingUtilities.updateComponentTreeUI(gui.Frame.getInstance().getWorkspaceTree());
+		}
+	}
+}

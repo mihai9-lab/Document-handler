@@ -1,0 +1,80 @@
+package actions;
+
+import actions.NewNodeAction;
+import actions.RenameNodeAction;
+import actions.DeleteNodeAction;
+import actions.CloseTabAction;
+import actions.CloseAllTabsAction;
+
+
+public class ActionManager {
+    
+	private NewNodeAction newNodeAction; 
+	private RenameNodeAction renameNodeAction;
+	private DeleteNodeAction deleteNodeAction;
+	private CloseTabAction closeTabAction; 
+	private CloseAllTabsAction closeAllTabsAction;
+	private AboutDialogAction aboutDialogAction;
+	
+	
+	public ActionManager(){
+		initialiseActions();
+	}
+
+	private void initialiseActions() {
+		newNodeAction = new NewNodeAction(); 
+		renameNodeAction = new RenameNodeAction();
+		deleteNodeAction = new DeleteNodeAction();
+		closeTabAction = new CloseTabAction(); 
+		closeAllTabsAction = new CloseAllTabsAction();
+		aboutDialogAction = new AboutDialogAction();
+	}
+
+	public NewNodeAction getNewNodeAction() {
+		return newNodeAction;
+	}
+	
+	public RenameNodeAction getRenameNodeAction() {
+		return renameNodeAction;
+	}
+	
+	public DeleteNodeAction getDeleteNodeAction() {
+		return deleteNodeAction;
+	}
+	
+	public CloseTabAction getCloseTabAction() {
+		return closeTabAction;
+	}
+	
+	public CloseAllTabsAction getCloseAllTabsAction() {
+		return closeAllTabsAction;
+	}
+	
+	public AboutDialogAction getAboutDialogAction() {
+		return aboutDialogAction;
+	}
+	
+	public void setNewNodeAction(NewNodeAction newNodeAction) {
+		this.newNodeAction = newNodeAction;
+	}
+	
+	public void setRenameNodeAction(RenameNodeAction renameNodeAction) {
+		this.renameNodeAction = renameNodeAction;
+	}
+	
+	public void setDeleteNodeAction(DeleteNodeAction deleteNodeAction) {
+		this.deleteNodeAction =  deleteNodeAction;
+	}
+	
+	public void setCloseTabAction(CloseTabAction closeTabAction) {
+		this.closeTabAction = closeTabAction;
+	}
+	
+	public void setCloseAllTabsAction(CloseAllTabsAction closeAllTabsAction) {
+		this.closeAllTabsAction = closeAllTabsAction;
+	}
+
+	public void setAboutDialogAction(AboutDialogAction aboutDialogAction) {
+		this.aboutDialogAction = aboutDialogAction;
+	}
+}

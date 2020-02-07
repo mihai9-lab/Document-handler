@@ -1,0 +1,44 @@
+package state;
+
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
+import tree.model.Page;
+import tree.model.Slot;
+import tree.model.geometry.RectangleGeometry;
+import view.PageView;
+
+public class RectangleState implements IState {
+	private Point pos;
+	private Page p;
+	
+	public void mousePressed(MouseEvent e){
+		pos=e.getPoint();
+		p=((PageView)e.getComponent()).getPage();
+		p.addSlot(new Slot(new RectangleGeometry(pos.getX(),pos.getY(),1,Math.PI/4,3*Math.PI/4)));
+	}
+	
+	public void mouseDragged(MouseEvent e){
+		if(p!=null && p==((PageView)e.getComponent()).getPage() && p.getSlotsCount()>0) {
+			p.removeSlot(p.getSlotsCount()-1);
+			double xCenter = (e.getPoint().getX()+pos.getX())/2;
+			double yCenter = (e.getPoint().getY()+pos.getY())/2;
+			double dx = pos.getX() - xCenter;
+			double dy = pos.getY() - yCenter;
+			double angle = Math.atan2(-dy,dx);
+			p.addSlot(new Slot(new RectangleGeometry(xCenter,yCenter,Math.sqrt(dx*dx+dy*dy),angle,Math.PI-angle)));
+		}
+	}
+	public void mouseReleased(MouseEvent e){
+		if(p!=null && p==((PageView)e.getComponent()).getPage() && p.getSlotsCount()>0) {
+			p.removeSlot(p.getSlotsCount()-1);
+			double xCenter = (e.getPoint().getX()+pos.getX())/2;
+			double yCenter = (e.getPoint().getY()+pos.getY())/2;
+			double dx = pos.getX() - xCenter;
+			double dy = pos.getY() - yCenter;
+			double angle = Math.atan2(-dy,dx);
+			p.addSlot(new Slot(new RectangleGeometry(xCenter,yCenter,Math.sqrt(dx*dx+dy*dy),angle,Math.PI-angle)));
+		}
+		p=null;
+	}
+}

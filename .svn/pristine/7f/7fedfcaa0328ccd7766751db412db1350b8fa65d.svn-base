@@ -1,0 +1,87 @@
+package view;
+
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Enumeration;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+
+import observer.interfaces.IOListener;
+import tree.model.Document;
+import tree.model.Page;
+import tree.model.Project;
+
+public class ProjectView extends JPanel implements IOListener {
+	
+	private Project p;
+	
+	private JLabel name;
+	
+	private String defaultMessage = "Select a project";
+	
+	private JTabbedPane documentViews;
+	
+	public ProjectView() {
+		setLayout(new BorderLayout());
+		name = new JLabel(defaultMessage);
+		documentViews = new JTabbedPane(JTabbedPane.TOP);
+		this.add(name,BorderLayout.NORTH);
+		this.add(documentViews,BorderLayout.CENTER);
+		p = null;
+	}
+	
+	@Override
+	public void update(Object o) {
+		if(o instanceof Project) {
+			Project p = (Project)(o);
+			if(p.getErased() || !p.getSelected()) {
+				clear();
+			}
+			else {
+				clear();
+				set(p);
+			}
+		}
+	}
+	
+	public void clear() {
+		if(this.p!=null) {
+			this.p.removeObserver(this);
+			this.p = null;
+		}
+		this.remove(documentViews);/*
+		int n = documentViews.getComponentCount();
+		for(int i=0;i<n;i++) {
+			((DocumentView)(documentViews.getComponent(i))).clear();
+		}*/
+		documentViews = new JTabbedPane(JTabbedPane.TOP);
+		this.add(documentViews,BorderLayout.CENTER);
+		name.setText(defaultMessage);
+	}
+	
+	public void set(Project p) {
+		if(p!=null && p.getSelected()) {
+			this.p=p;
+			p.addObserver(this);
+			name.setText(p.toString());
+			int n=p.getChildCount();
+			for(int i=0;i<n;i++) {
+				Document d = (Document)(p.getChildAt(i));
+				if(!d.getErased() && !d.getClosed()) {
+					DocumentView dV = new DocumentView(this);
+					dV.set(d);
+				}
+			}
+		}
+	}
+	
+	public void removeFromParrent(DocumentView dV) {
+		documentViews.remove(dV);
+	}
+	
+	public void addToParrent(DocumentView dV) {
+		documentViews.add(dV);
+	}
+}

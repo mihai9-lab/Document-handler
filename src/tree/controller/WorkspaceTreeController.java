@@ -1,0 +1,31 @@
+package tree.controller;
+
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+
+import gui.Frame;
+import tree.model.Page;
+
+public class WorkspaceTreeController implements TreeSelectionListener{
+
+	private JTree tree;
+	
+	public WorkspaceTreeController(JTree tree) {
+		this.tree=tree;
+	}
+	@Override
+	public void valueChanged(TreeSelectionEvent e) {
+		TreePath path = e.getPath();
+		tree.expandPath(path);
+
+		Page p = Frame.getInstance().getProjectView().getOpenedPage();
+		
+		if(p!=null)
+			p.getPageSelectedSlots().clearSelection();
+
+		
+	}
+
+}

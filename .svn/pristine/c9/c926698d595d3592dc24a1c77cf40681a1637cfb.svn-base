@@ -1,0 +1,24 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+import error_handling.ExceptionHandler;
+import gui.Frame;
+import tree.model.ITreeNodeSerialization;
+
+public class DragAndDropAction extends AbstractIconAction{
+
+	public DragAndDropAction() {
+		putValue(SMALL_ICON, loadIcon("images/drag-and-drop-shape.png"));
+		putValue(NAME, "Drag and Drop Shape");
+		putValue(SHORT_DESCRIPTION, "Drag and Drop Shape");
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		gui.Frame.getInstance().getIStateManager().setDragAndDropState();
+	}
+}

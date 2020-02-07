@@ -1,0 +1,10 @@
+package handling;
+
+import javax.swing.JOptionPane;
+
+public class ShowError {
+	//private void ShowError() {}
+	public static void showMessage(String error) {
+		JOptionPane.showMessageDialog(gui.Frame.getInstance(), error, "Error!", JOptionPane.ERROR_MESSAGE);
+	}
+}

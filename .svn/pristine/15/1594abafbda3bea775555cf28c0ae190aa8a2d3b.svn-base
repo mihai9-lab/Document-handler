@@ -1,0 +1,33 @@
+package gui;
+
+import java.awt.Color;
+
+import javax.swing.JToolBar;
+
+public class ToolBar extends JToolBar {
+
+	public ToolBar() {
+		initialise();
+	}
+	
+	public void initialise() {
+		
+		this.add(gui.Frame.getInstance().getActionManager().getNewNodeAction());
+		this.add(gui.Frame.getInstance().getActionManager().getRenameNodeAction());
+		this.add(gui.Frame.getInstance().getActionManager().getDeleteNodeAction());
+		this.add(new Separator());
+		
+		this.add(gui.Frame.getInstance().getActionManager().getOpenNodeAction());
+		this.add(gui.Frame.getInstance().getActionManager().getSaveNodeAction());
+		this.add(new Separator());
+		
+		this.add(gui.Frame.getInstance().getActionManager().getCloseTabAction());
+		this.add(gui.Frame.getInstance().getActionManager().getCloseAllTabsAction());
+		
+		setFloatable(true);
+		setBackground(new Color(0xDFDDC7));
+		
+		
+	}
+
+}

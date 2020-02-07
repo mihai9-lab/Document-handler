@@ -1,0 +1,44 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.tree.TreeNode;
+
+import gui.Frame;
+import tree.model.Project;
+import tree.model.Workspace;
+import tree.model.WorkspaceModel;
+
+public class OpenNodeAction extends AbstractIconAction {
+
+	public OpenNodeAction() {
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
+		        KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/toolbar-open.png"));
+		putValue(NAME, "Open");
+		putValue(SHORT_DESCRIPTION, "Open (Ctrl + O)");
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		TreeNode node = (TreeNode)Frame.getInstance().getSerialiser().open();
+		if(node == null) return;
+		
+		if(node instanceof Workspace) {
+			WorkspaceModel model = new WorkspaceModel((Workspace)node);
+			
+		}
+			
+		/*if(node instanceof Project) {
+			Workspace w = (Workspace)Frame.getInstance().getWorkspaceTree().getModel().getRoot();
+			w.addProject((Project)t);
+			SwingUtilities.updateComponentTreeUI(gui.Frame.getInstance().getWorkspaceTree());
+		}*/
+		
+		SwingUtilities.updateComponentTreeUI(gui.Frame.getInstance().getWorkspaceTree());
+	}
+
+}

@@ -1,0 +1,18 @@
+package state;
+
+import java.awt.event.MouseEvent;
+
+import tree.model.Slot;
+import tree.model.geometry.RectangleGeometry;
+import view.PageView;
+
+public class SelectState implements IState {
+	
+	public void mousePressed(MouseEvent e){
+	}
+	public void mouseDragged(MouseEvent e){
+	}
+	public void mouseReleased(MouseEvent e){
+	}
+	
+}

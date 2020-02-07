@@ -1,0 +1,75 @@
+package command;
+
+import java.awt.Point;
+import java.util.ArrayList;
+
+import tree.model.Page;
+import tree.model.PageSelectedSlots;
+import tree.model.Slot;
+
+public class RotateAndScaleCommand extends AbstractCommand {
+	
+	private Page p;
+	private ArrayList<Slot> slots;
+	private Point begPos;
+	private Point pos;
+	
+	public RotateAndScaleCommand(Page p,PageSelectedSlots ps,Point begPos,Point pos) {
+		this.p=p;
+		int c=ps.getSelectedCount();
+		slots = new ArrayList<Slot>();
+		for(int i=0;i<c;i++) slots.add(ps.getSlot(i));
+		this.begPos = begPos;
+		this.pos = pos;
+	}
+	
+	public void doCommand() {
+		ArrayList<Slot> curSlots = new ArrayList<Slot>();
+		int c = p.getPageSelectedSlots().getSelectedCount();
+		for(int i=0;i<c;i++) curSlots.add(p.getSlot(i));
+		p.getPageSelectedSlots().clearSelection();
+		for(Slot s:slots) p.getPageSelectedSlots().addSlot(s);
+		
+		double xCenter,yCenter,dx,dy,curDist,curAng,oldDist,oldAng;
+		xCenter = p.getPageSelectedSlots().getXCenter();
+		yCenter = p.getPageSelectedSlots().getYCenter();
+		dx = pos.getX() - xCenter;
+		dy = pos.getY() - yCenter;
+		curDist = Math.sqrt(dx*dx+dy*dy);
+		curAng = Math.atan2(-dy, dx);
+		dx = begPos.getX() - xCenter;
+		dy = begPos.getY() - yCenter;
+		oldDist = Math.sqrt(dx*dx+dy*dy);
+		oldAng = Math.atan2(-dy, dx);
+		p.getPageSelectedSlots().scale(curDist/oldDist);
+		p.getPageSelectedSlots().rotate(curAng-oldAng);
+		
+		p.getPageSelectedSlots().clearSelection();
+		//for(Slot s:curSlots) p.getPageSelectedSlots().addSlot(s);
+	}
+	
+	public void undoCommand() {
+		ArrayList<Slot> curSlots = new ArrayList<Slot>();
+		int c = p.getPageSelectedSlots().getSelectedCount();
+		for(int i=0;i<c;i++) curSlots.add(p.getSlot(i));
+		p.getPageSelectedSlots().clearSelection();
+		for(Slot s:slots) p.getPageSelectedSlots().addSlot(s);
+		
+		double xCenter,yCenter,dx,dy,curDist,curAng,oldDist,oldAng;
+		xCenter = p.getPageSelectedSlots().getXCenter();
+		yCenter = p.getPageSelectedSlots().getYCenter();
+		dx = pos.getX() - xCenter;
+		dy = pos.getY() - yCenter;
+		curDist = Math.sqrt(dx*dx+dy*dy);
+		curAng = Math.atan2(-dy, dx);
+		dx = begPos.getX() - xCenter;
+		dy = begPos.getY() - yCenter;
+		oldDist = Math.sqrt(dx*dx+dy*dy);
+		oldAng = Math.atan2(-dy, dx);
+		p.getPageSelectedSlots().scale(oldDist/curDist);
+		p.getPageSelectedSlots().rotate(oldAng-curAng);
+		
+		p.getPageSelectedSlots().clearSelection();
+		//for(Slot s:curSlots) p.getPageSelectedSlots().addSlot(s);
+	}
+}

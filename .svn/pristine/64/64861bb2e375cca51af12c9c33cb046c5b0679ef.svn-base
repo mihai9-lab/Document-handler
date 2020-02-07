@@ -1,0 +1,12 @@
+package tree.model.geometry;
+
+import view.geometry_painter.CirclePainter;
+
+public class CircleGeometry extends Geometry {
+
+	public CircleGeometry(double xCenter, double yCenter, double radius, double angle) {
+		super(xCenter, yCenter, radius, angle);
+		geometryPainter = new CirclePainter(this);
+	}
+	
+}

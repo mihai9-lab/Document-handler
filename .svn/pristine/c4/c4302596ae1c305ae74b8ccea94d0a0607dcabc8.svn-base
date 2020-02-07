@@ -1,0 +1,190 @@
+package tree.model;
+
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+
+import observer.interfaces.IOListener;
+import observer.interfaces.IObserver;
+
+public class PageSelectedSlots implements IObserver,Transferable{
+	
+	private ArrayList<IOListener> listeners;
+	
+	static public DataFlavor slotsFlavor;
+	static private DataFlavor[] supportedFlavors = {slotsFlavor};
+	
+	private boolean deletion;
+	
+	private ArrayList<Slot> selectedSlots;
+	private double xCenter,yCenter;
+	private Page p;
+	
+	public boolean hasElements() {
+		return !selectedSlots.isEmpty();
+	}
+	public PageSelectedSlots(Page p) {
+		this.p=p;
+		selectedSlots = new ArrayList<Slot>();
+		
+		try {
+			this.slotsFlavor = new DataFlavor(Class.forName("tree.model.Slot"),"Slots");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void clearSelection() {
+		selectedSlots.clear();
+		recalc();
+		this.notifyObserver(this.p);
+	}
+	
+	public void addSlot(Slot s) {
+		selectedSlots.add(s);
+		recalc();
+		this.notifyObserver(this.p);
+	}
+	
+	public void removeSlotFromSelection(Slot s) {
+		selectedSlots.remove(s);
+		recalc();
+		this.notifyObserver(this.p);
+	}
+	
+	public int getSelectedCount() {
+		return selectedSlots.size();
+	}
+	
+	public Slot getSlot(int i) {
+		return selectedSlots.get(i);
+	}
+	
+	public void setDeletion(boolean deletion) {
+		this.deletion=deletion;
+	}
+	
+	public boolean isDeletion() {
+		return deletion;
+	}
+	
+	public void removeSlots() {
+		if(!deletion) return;
+		for(Slot s:selectedSlots) {
+			p.removeSlot(s);
+		}
+		selectedSlots.clear();
+	}
+	
+	public void rotate(double alfa) {
+		recalc();
+		for(Slot s:selectedSlots) {
+			double dx=s.getGeometry().getXCenter()-xCenter;
+			double dy=s.getGeometry().getYCenter()-yCenter;
+			double dxn=Math.cos(alfa)*dx+Math.sin(alfa)*dy;
+			double dyn=-Math.sin(alfa)*dx+Math.cos(alfa)*dy;
+			s.getGeometry().translate(dxn-dx,dyn-dy);
+			s.getGeometry().rotate(alfa);
+		}
+		this.notifyObserver(this.p);
+	}
+	
+	public void scale(double c) {
+		recalc();
+		for(Slot s:selectedSlots) {
+			s.getGeometry().translate((c-1.0)*(s.getGeometry().getXCenter()-xCenter), (c-1.0)*(s.getGeometry().getYCenter()-yCenter));
+			s.getGeometry().scale(c);
+		}
+		this.notifyObserver(this.p);
+	}
+	
+	public void translate(double dx,double dy) {
+		recalc();
+		for(Slot s:selectedSlots) {
+			s.getGeometry().translate(dx, dy);
+		}
+		this.notifyObserver(this.p);
+	}
+	
+	private void recalc() {
+		double sum=0;
+		xCenter=0;
+		yCenter=0;
+		for(Slot s:selectedSlots) {
+			sum+=s.getGeometry().getSurface();
+			xCenter+=s.getGeometry().getXCenter()*s.getGeometry().getSurface();
+			yCenter+=s.getGeometry().getYCenter()*s.getGeometry().getSurface();
+		}
+		if(sum!=0) {
+			xCenter/=sum;
+			yCenter/=sum;
+		}
+	}
+	
+	public double getXCenter() {
+		return xCenter;
+	}
+	
+	public double getYCenter() {
+		return yCenter;
+	}
+	
+	@Override
+	public void addObserver(IOListener listener) {
+
+		if(listener == null)
+			return;
+		if(listeners == null)
+			listeners = new ArrayList<IOListener>();
+		if(listeners.contains(listener))
+			return;
+		listeners.add(listener);
+
+	}
+
+	@Override
+	public void removeObserver(IOListener listener) {
+
+		if(listener == null)
+			return;
+		if(!listeners.contains(listener))
+			return;
+		listeners.remove(listener);
+
+	}
+
+	@Override
+	public void notifyObserver(Object event) {
+
+		if(event == null)
+			return;
+		if(listeners == null)
+			return;
+
+		ArrayList<IOListener> temporaryListeners = new ArrayList<IOListener>();
+		for(IOListener listener:listeners) temporaryListeners.add(listener);
+		for(IOListener listener:temporaryListeners) {
+			listener.update(event);
+		}
+	}
+	@Override
+	public DataFlavor[] getTransferDataFlavors() {
+		return supportedFlavors;
+	}
+	@Override
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
+		if(flavor.equals(slotsFlavor)) 
+			return true;
+		return false;
+	}
+	@Override
+	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+		if(flavor.equals(slotsFlavor))
+			return selectedSlots;
+		else
+			throw new UnsupportedFlavorException(slotsFlavor);
+	}
+}

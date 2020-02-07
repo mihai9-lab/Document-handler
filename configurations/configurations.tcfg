@@ -1,0 +1,14 @@
+NewNodeAction true
+RenameNodeAction true
+DeleteNodeAction true
+SaveNodeAction true
+SaveAsNodeAction true
+OpenNodeAction true
+CloseTabAction true
+CloseAllTabsAction true
+UndoAction true
+RedoAction true
+CutAction true
+CopyAction true
+PasteAction true
+ShareAction true

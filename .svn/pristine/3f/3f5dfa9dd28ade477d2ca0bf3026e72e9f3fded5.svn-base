@@ -1,0 +1,12 @@
+package error_handling;
+
+import javax.swing.JOptionPane;
+
+public interface ExceptionHandler {
+	public static final ExceptionFactory eF = new ExceptionFactory();
+	public static void handleException(String s) {
+		Exception e = eF.createException(s);
+		e.printStackTrace();
+		JOptionPane.showMessageDialog(gui.Frame.getInstance(), e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+	}
+}

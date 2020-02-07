@@ -1,0 +1,26 @@
+package view.geometry_painter;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+
+public abstract class GeometryPainter {
+	
+	protected Shape shape;
+	
+	public GeometryPainter() {};
+	
+	public void paint(Graphics2D g) {
+		g.setColor(Color.RED);
+		g.draw(shape);
+	}
+	
+
+	public Shape getShape() {
+		return shape;
+	}
+
+	public void setShape(Shape shape) {
+		this.shape = shape;
+	}
+}

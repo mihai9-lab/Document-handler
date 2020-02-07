@@ -1,0 +1,36 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+import gui.Frame;
+import tree.model.ITreeNodeSerialization;
+
+public class SaveNodeAction extends AbstractIconAction{
+
+	public SaveNodeAction() {
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
+		        KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/toolbar-save.png"));
+		putValue(NAME, "Save");
+		putValue(SHORT_DESCRIPTION, "Save (Ctrl + S)");
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object node = Frame.getInstance().getWorkspaceTree().getLastSelectedPathComponent();
+
+		if(node==null) {
+			handling.ShowError.showMessage("You have to select a Workspace, Project or Document to save it!");
+			return;
+		}
+		if(node instanceof tree.model.Page) {
+			handling.ShowError.showMessage("You can't save a page. You can only save Workspace, Project or a Document!");
+			return;
+		}
+
+		Frame.getInstance().getSerialiser().save((ITreeNodeSerialization)node);
+	}
+}

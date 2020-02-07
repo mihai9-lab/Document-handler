@@ -1,0 +1,41 @@
+package state;
+
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
+import tree.model.Page;
+import tree.model.Slot;
+import tree.model.geometry.CircleGeometry;
+import tree.model.geometry.TriangleGeometry;
+import view.PageView;
+
+public class TriangleState implements IState {
+	private Point pos;
+	private Page p;
+	
+	public void mousePressed(MouseEvent e){
+		pos=e.getPoint();
+		p=((PageView)e.getComponent()).getPage();
+		p.addSlot(new Slot(new TriangleGeometry(pos.getX(),pos.getY(),1,0)));
+	}
+	
+	public void mouseDragged(MouseEvent e){
+		if(p!=null && p==((PageView)e.getComponent()).getPage() && p.getSlotsCount()>0) {
+			p.removeSlot(p.getSlotsCount()-1);
+			double dx = e.getPoint().getX() - pos.getX();
+			double dy = e.getPoint().getY() - pos.getY();
+			double angle = Math.atan2(-dy,dx);
+			p.addSlot(new Slot(new TriangleGeometry(pos.getX(),pos.getY(),Math.sqrt(dx*dx+dy*dy),angle)));
+		}
+	}
+	public void mouseReleased(MouseEvent e){
+		if(p!=null && p==((PageView)e.getComponent()).getPage() && p.getSlotsCount()>0) {
+			p.removeSlot(p.getSlotsCount()-1);
+			double dx = e.getPoint().getX() - pos.getX();
+			double dy = e.getPoint().getY() - pos.getY();
+			double angle = Math.atan2(-dy,dx);
+			p.addSlot(new Slot(new TriangleGeometry(pos.getX(),pos.getY(),Math.sqrt(dx*dx+dy*dy),angle)));
+		}
+		p=null;
+	}
+}

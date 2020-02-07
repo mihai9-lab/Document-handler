@@ -1,0 +1,8 @@
+package tree.model;
+
+import javax.swing.tree.TreeNode;
+
+public interface INode extends TreeNode {
+
+	public void add(TreeNode node);
+}

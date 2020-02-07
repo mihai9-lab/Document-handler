@@ -1,0 +1,12 @@
+package tree.model.geometry;
+
+import view.geometry_painter.TrianglePainter;
+
+public class TriangleGeometry extends Geometry {
+
+	public TriangleGeometry(double xCenter, double yCenter, double radius, double angle) {
+		super(xCenter, yCenter, radius, angle);
+		geometryPainter = new TrianglePainter(this);
+	}
+	
+}

@@ -1,0 +1,19 @@
+package element;
+
+import java.io.File;
+import element.viewer.*;
+public class PictureElement implements IElement{
+	
+	private File picture;
+	
+	public PictureElement() {
+		picture=null;
+	}
+
+	@Override
+	public void edit() {
+		picture = PictureEditor.showGUI(picture);
+	}
+	
+	
+}

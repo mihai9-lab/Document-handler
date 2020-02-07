@@ -1,0 +1,78 @@
+package directory.browser;
+
+import java.io.File;
+import java.util.ArrayList;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.TreeNode;
+
+import directory.browser.file.filters.AbstractFileFilter;
+import directory.browser.file.filters.DocumentFileFilter;
+import directory.browser.file.filters.GerudokFileFilter;
+import directory.browser.file.filters.ProjectFileFilter;
+import directory.browser.file.filters.WorkspaceFileFilter;
+import gui.Frame;
+import tree.model.ITreeNodeSerialization;
+import tree.model.Project;
+import tree.model.Workspace;
+
+public class DirectoryBrowser extends JFileChooser implements IDirectoryBrowser{
+	
+	ArrayList<AbstractFileFilter> fileFilters;
+	
+	public DirectoryBrowser() {
+		super();
+	}
+	
+	public void initFileFilters() {
+		fileFilters = new ArrayList<AbstractFileFilter>();
+		
+		fileFilters.add(new WorkspaceFileFilter());
+		fileFilters.add(new ProjectFileFilter());
+		fileFilters.add(new DocumentFileFilter());
+	}
+	
+
+	public File getSaveLocation(ITreeNodeSerialization node) {
+		
+		this.setAcceptAllFileFilterUsed(false);
+		this.setFileFilter(returnFileFilter(node));
+		
+		String extension = ((AbstractFileFilter)this.getFileFilter()).getExtension();
+		this.setSelectedFile(new File(node.toString() + extension));
+		
+		int actionValue=this.showSaveDialog(Frame.getInstance());
+		if(actionValue==JFileChooser.CANCEL_OPTION || actionValue==JFileChooser.ERROR_OPTION)
+			return null;
+		
+		File f = this.getSelectedFile();
+		if(!f.getName().endsWith(extension))
+			f.renameTo(new File(f.getName() + extension));
+		
+		return f;
+	}
+	
+	@Override
+	public File getOpenLocation() {
+		this.setAcceptAllFileFilterUsed(false);
+		this.setFileFilter(new GerudokFileFilter());
+		
+		int actionValue = this.showOpenDialog(Frame.getInstance());
+		if(actionValue==JFileChooser.CANCEL_OPTION || actionValue==JFileChooser.ERROR_OPTION)
+			return null;
+		
+		File f = this.getSelectedFile();
+		
+		return f;
+	}
+	
+	private static FileFilter returnFileFilter(ITreeNodeSerialization node) {
+		if(node instanceof Workspace)
+			return new WorkspaceFileFilter();
+		else if(node instanceof Project)
+			return new ProjectFileFilter();
+		else
+			return new DocumentFileFilter();
+	}
+}

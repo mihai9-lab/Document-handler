@@ -1,0 +1,41 @@
+package gui;
+
+import javax.swing.JOptionPane;
+
+import tree.model.Workspace;
+
+public class StartDialog extends JOptionPane {
+	
+	public StartDialog() {
+
+		
+	}
+	
+	public Workspace getWorkspace() {
+		String[] options = {"Last used Workspace","Saved Workspace","Empty Workspace"};
+		int option = showDialog(options);
+		
+		if(option == 0) {
+			
+		}
+		if(option == 1) {
+			Workspace ws=Frame.getInstance().getSerialiser().openWorkspace();
+			if(ws!=null)
+				return ws;
+		}
+		
+		return new Workspace();
+		
+	}
+
+	private int showDialog(String[] options) {
+		return this.showOptionDialog(gui.Frame.getInstance(),
+												   "Which workspace would you like to open?",
+												   "Message",
+												   JOptionPane.DEFAULT_OPTION,
+												   JOptionPane.INFORMATION_MESSAGE,
+												   null,
+												   options,
+												   options[0]);
+	}
+}

@@ -1,0 +1,10 @@
+package serialization;
+
+import tree.model.ITreeNodeSerialization;
+import tree.model.Workspace;
+
+public interface ISerialization {
+	public void save(ITreeNodeSerialization node);
+	public ITreeNodeSerialization open();
+	public Workspace openWorkspace();
+}

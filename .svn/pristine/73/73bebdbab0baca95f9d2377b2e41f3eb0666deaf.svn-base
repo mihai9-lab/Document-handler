@@ -1,0 +1,66 @@
+package directory.browser;
+
+import java.io.File;
+import java.util.ArrayList;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.TreeNode;
+
+import directory.browser.file.filters.AbstractFileFilter;
+import directory.browser.file.filters.DocumentFileFilter;
+import directory.browser.file.filters.ProjectFileFilter;
+import directory.browser.file.filters.WorkspaceFileFilter;
+import gui.Frame;
+import tree.model.Project;
+import tree.model.Workspace;
+
+public class DirectoryBrowser extends JFileChooser implements IDirectoryBrowser{
+	
+	ArrayList<AbstractFileFilter> fileFilters;
+	
+	public DirectoryBrowser() {
+		super();
+	}
+	
+	public void initFileFilters() {
+		fileFilters = new ArrayList<AbstractFileFilter>();
+		
+		fileFilters.add(new WorkspaceFileFilter());
+		fileFilters.add(new ProjectFileFilter());
+		fileFilters.add(new DocumentFileFilter());
+	}
+	
+
+	public File getSaveLocation(TreeNode node) {
+		
+		this.setAcceptAllFileFilterUsed(false);
+		if(node instanceof Workspace)
+			this.setFileFilter(new WorkspaceFileFilter());
+		else if(node instanceof Project)
+			this.setFileFilter(new ProjectFileFilter());
+		else
+			this.setFileFilter(new DocumentFileFilter());
+		
+		String extension = ((AbstractFileFilter)this.getFileFilter()).getExtension();
+		this.setSelectedFile(new File(node.toString() + extension));
+		
+		int actionValue=this.showSaveDialog(Frame.getInstance());
+		if(actionValue==JFileChooser.CANCEL_OPTION || actionValue==JFileChooser.ERROR_OPTION)
+			return null;
+		
+		File f = this.getSelectedFile();
+		if(!f.getName().endsWith(extension))
+			f.renameTo(new File(f.getName() + extension));
+		
+		return f;
+	}
+
+	@Override
+	public File getOpenLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+}

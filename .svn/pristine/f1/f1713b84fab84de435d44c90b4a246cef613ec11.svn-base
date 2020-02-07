@@ -1,0 +1,151 @@
+package actions;
+
+import actions.NewNodeAction;
+import actions.RenameNodeAction;
+import actions.DeleteNodeAction;
+import actions.CloseTabAction;
+import actions.CloseAllTabsAction;
+
+
+public class ActionManager {
+
+	private NewNodeAction 		newNodeAction;
+	private RenameNodeAction 	renameNodeAction;
+	private DeleteNodeAction 	deleteNodeAction;
+	private CloseTabAction 		closeTabAction;
+	private CloseAllTabsAction 	closeAllTabsAction;
+	private AboutDialogAction 	aboutDialogAction;
+	private OpenNodeAction		openNodeAction;
+	private SaveNodeAction		saveNodeAction;
+	private SaveAsNodeAction	saveAsNodeAction;
+	
+	private DrawRectangleAction		drawRectangleAction;
+	private DrawCircleAction		drawCircleAction;
+	private DrawTriangleAction		drawTriangleAction;
+	private SelectShapeAction		selectShapeAction;
+	
+	
+	public ActionManager(){
+		initialiseActions();
+	}
+
+	private void initialiseActions() {
+		newNodeAction = new NewNodeAction();
+		renameNodeAction = new RenameNodeAction();
+		deleteNodeAction = new DeleteNodeAction();
+		closeTabAction = new CloseTabAction();
+		closeAllTabsAction = new CloseAllTabsAction();
+		aboutDialogAction = new AboutDialogAction();
+		openNodeAction = new OpenNodeAction();
+		saveNodeAction = new SaveNodeAction();
+		setSaveAsNodeAction(new SaveAsNodeAction());
+		drawRectangleAction = new DrawRectangleAction();
+		drawCircleAction = new DrawCircleAction();
+		drawTriangleAction = new DrawTriangleAction();
+		selectShapeAction = new SelectShapeAction();
+	}
+
+	public NewNodeAction getNewNodeAction() {
+		return newNodeAction;
+	}
+
+	public RenameNodeAction getRenameNodeAction() {
+		return renameNodeAction;
+	}
+
+	public DeleteNodeAction getDeleteNodeAction() {
+		return deleteNodeAction;
+	}
+
+	public CloseTabAction getCloseTabAction() {
+		return closeTabAction;
+	}
+
+	public CloseAllTabsAction getCloseAllTabsAction() {
+		return closeAllTabsAction;
+	}
+
+	public AboutDialogAction getAboutDialogAction() {
+		return aboutDialogAction;
+	}
+
+	public void setNewNodeAction(NewNodeAction newNodeAction) {
+		this.newNodeAction = newNodeAction;
+	}
+
+	public void setRenameNodeAction(RenameNodeAction renameNodeAction) {
+		this.renameNodeAction = renameNodeAction;
+	}
+
+	public void setDeleteNodeAction(DeleteNodeAction deleteNodeAction) {
+		this.deleteNodeAction =  deleteNodeAction;
+	}
+
+	public void setCloseTabAction(CloseTabAction closeTabAction) {
+		this.closeTabAction = closeTabAction;
+	}
+
+	public void setCloseAllTabsAction(CloseAllTabsAction closeAllTabsAction) {
+		this.closeAllTabsAction = closeAllTabsAction;
+	}
+
+	public void setAboutDialogAction(AboutDialogAction aboutDialogAction) {
+		this.aboutDialogAction = aboutDialogAction;
+	}
+
+	public OpenNodeAction getOpenNodeAction() {
+		return openNodeAction;
+	}
+
+	public void setOpenNodeAction(OpenNodeAction openNodeAction) {
+		this.openNodeAction = openNodeAction;
+	}
+
+	public SaveNodeAction getSaveNodeAction() {
+		return saveNodeAction;
+	}
+
+	public void setSaveNodeAction(SaveNodeAction saveNodeAction) {
+		this.saveNodeAction = saveNodeAction;
+	}
+	
+	public DrawRectangleAction getDrawRectangleAction() {
+		return drawRectangleAction;
+	}
+	
+	public void setDrawRectangleAction(DrawRectangleAction drawRectangleAction) {
+		this.drawRectangleAction = drawRectangleAction;
+	}
+	
+	public DrawCircleAction getDrawCircleAction() {
+		return drawCircleAction;
+	}
+	
+	public void setDrawCircleAction(DrawCircleAction drawCircleAction) {
+		this.drawCircleAction = drawCircleAction;
+	}
+	
+	public DrawTriangleAction getDrawTriangleAction() {
+		return drawTriangleAction;
+	}
+	
+	public void setDrawTriangleAction(DrawTriangleAction drawTriangleAction) {
+		this.drawTriangleAction = drawTriangleAction;
+	}
+	
+	public SelectShapeAction getSelectShapeAction() {
+		return selectShapeAction;
+	}
+	
+	public void setSelectShapeAction(SelectShapeAction selectShapeAction) {
+		this.selectShapeAction = selectShapeAction;
+	}
+
+	public SaveAsNodeAction getSaveAsNodeAction() {
+		return saveAsNodeAction;
+	}
+
+	public void setSaveAsNodeAction(SaveAsNodeAction saveAsNodeAction) {
+		this.saveAsNodeAction = saveAsNodeAction;
+	}
+}

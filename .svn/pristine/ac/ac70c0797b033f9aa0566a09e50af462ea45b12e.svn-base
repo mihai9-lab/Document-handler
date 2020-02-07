@@ -1,0 +1,166 @@
+package tree.model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+
+import javax.swing.tree.TreeNode;
+
+import observer.interfaces.IOListener;
+import observer.interfaces.IObserver;
+
+public class Document implements TreeNode,IObserver{
+	
+	private ArrayList<IOListener> listeners;
+	
+	private ArrayList<Page> pages;
+	private String name;
+	private Project parentNode;
+	private boolean newDocumentStatus;
+	
+	public Document(Project parentNode, String name, boolean status) {
+		this.pages = new ArrayList<Page>();
+		this.parentNode = parentNode;
+		this.name = name;
+		this.newDocumentStatus = status;
+	}
+	
+	public boolean getNewDocumentStatus() {
+		return newDocumentStatus;
+	}
+	
+	public void addPage() {
+		int newPageCount=0;
+		
+		for(Page p:pages)
+			if(p.getNewPageStatus())
+				newPageCount++;
+		newPageCount++;
+		
+		String pageName = "New Page " + newPageCount;
+		Page pg =  new Page(this,pageName,true);
+		pages.add(pg);
+		notifyObserver(pg);
+	}
+	
+	public void addPage(String pageName) {
+		Page pg= new Page(this,pageName,false);
+		pages.add(pg);
+		notifyObserver(pg);
+	}
+	
+	public void removeDocument() {
+		parentNode.removeDocument(this);
+	}
+	
+	protected void removePage(Page pg) {
+		if(pg==null)
+			return;
+		if(pages.isEmpty())
+			return;
+		
+		if(pages.contains(pg)) {
+			pages.remove(pg);
+			notifyObserver(pg);//verovatno treba izmeniti kada vidimo sta  se notify-uje, mozda sa 
+							   //novim poljem u klasi Document koja indikuje da li je projekat uklonjen	
+		}
+	}
+	
+	public void renameDocument(String name) {
+		this.name=name;
+		this.newDocumentStatus=false;
+		notifyObserver(name); //verovatno treba  izmeniti
+	}
+	@Override
+	public TreeNode getChildAt(int childIndex) {
+
+		if(pages.isEmpty())
+			return null;
+		if(childIndex<0)
+			return null;
+		if(pages.size()<childIndex)
+			return null;
+		
+		return pages.get(childIndex);
+	}
+
+	@Override
+	public int getChildCount() {
+		
+		return pages.size();
+	}
+
+	@Override
+	public TreeNode getParent() {
+		
+		return parentNode;
+	}
+
+	@Override
+	public int getIndex(TreeNode node) {
+		
+		if(node instanceof Page)
+			if(pages.contains(node))
+				return pages.indexOf((Page)node);
+		
+		return -1;
+	}
+
+	@Override
+	public boolean getAllowsChildren() {
+		
+		return true;
+	}
+
+	@Override
+	public boolean isLeaf() {
+		
+		return false;
+	}
+
+	@Override
+	public Enumeration<? extends TreeNode> children() {
+
+		if(pages.isEmpty())
+			return null;
+		return Collections.enumeration(pages);
+	}
+
+	@Override
+	public void addObserver(IOListener listener) {
+		
+		if(listener == null)
+			return;
+		if(listeners == null)
+			listeners = new ArrayList<IOListener>();
+		if(listeners.contains(listener))
+			return;
+		listeners.add(listener);
+		
+	}
+
+	@Override
+	public void removeObserver(IOListener listener) {
+		
+		if(listener == null)
+			return;
+		if(!listeners.contains(listener))
+			return;
+		listeners.remove(listener);
+		
+	}
+
+	@Override
+	public void notifyObserver(Object event) {
+
+		if(event == null)
+			return;
+		if(listeners == null)
+			return;
+		
+		for(IOListener listener:listeners) 
+			listener.update(event);
+		
+	}
+
+}

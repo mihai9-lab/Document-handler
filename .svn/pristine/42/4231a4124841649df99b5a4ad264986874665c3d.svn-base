@@ -1,0 +1,69 @@
+package tree.model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+
+import javax.swing.tree.TreeNode;
+
+public class Workspace implements TreeNode {
+
+	private ArrayList<Project> projects;
+	private String name;
+	
+	public Workspace() {
+		projects= new ArrayList();
+		name = "Workspace";
+	}
+	@Override
+	public TreeNode getChildAt(int childIndex) {
+		
+		if(projects.isEmpty())
+			return null;
+		if(childIndex < 0)
+			return null;
+		if(projects.size()< childIndex)
+			return  null;
+		
+		return projects.get(childIndex);
+	}
+
+	@Override
+	public int getChildCount() {
+		
+		return projects.size();
+	}
+
+	@Override
+	public TreeNode getParent() {
+		
+		return null;
+	}
+
+	@Override
+	public int getIndex(TreeNode node) {
+		
+		if(node instanceof Project)
+			return projects.indexOf((Project)node);
+		else
+			return -1;
+	}
+
+	@Override
+	public boolean getAllowsChildren() {
+		return true;
+	}
+
+	@Override
+	public boolean isLeaf() {
+		return false;
+	}
+
+	@Override
+	public Enumeration<Project> children() {
+		if(projects.isEmpty())
+			return null;
+		return Collections.enumeration(projects);
+	}
+
+}

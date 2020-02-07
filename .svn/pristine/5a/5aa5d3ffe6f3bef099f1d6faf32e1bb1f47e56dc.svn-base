@@ -1,0 +1,36 @@
+package sharing.mediator;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+
+import tree.model.Document;
+
+public class Mediator {
+	
+	private ArrayList<Document> documents;
+	
+	public Mediator(Document doc) {
+		documents = new ArrayList<Document>();
+		documents.add(doc);
+	}
+	
+	
+	
+	private static Object cloneAny(Object object) {
+		try {
+		     ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+		     ObjectOutputStream outStream = new ObjectOutputStream(byteOutStream);
+		     outStream.writeObject(object);
+		     ByteArrayInputStream byteInputStream = new ByteArrayInputStream(byteOutStream.toByteArray());
+		     ObjectInputStream inStream = new ObjectInputStream(byteInputStream);
+		     return inStream.readObject();
+		   }
+		catch (Exception e) {
+		     e.printStackTrace();
+		     return null;
+		   }
+	}
+}

@@ -1,0 +1,39 @@
+package tree.model;
+
+import java.io.Serializable;
+
+import tree.model.geometry.IGeometry;
+
+public class Slot implements Serializable{
+	
+	public enum Element{
+		TEXT,
+		PICTURE
+	}
+	private IGeometry g;
+	private Object element;
+	public Slot(IGeometry g) {
+		this.g=g;
+	}
+	
+	public IGeometry getGeometry() {
+		return g;
+	}
+	
+	public void setGeometry(IGeometry g) {
+		this.g=g;
+	}
+	
+	public void createElement(Element E) {
+		if(E == Element.TEXT) {
+			
+		}
+		else if(E == Element.PICTURE) {
+			
+		}
+	}
+	
+	public Object getElement() {
+		return element;
+	}
+}

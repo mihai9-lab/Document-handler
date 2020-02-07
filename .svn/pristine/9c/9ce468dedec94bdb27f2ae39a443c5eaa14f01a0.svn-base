@@ -1,0 +1,24 @@
+1) Crtanje:
+	Klikom na jednu tačku se određuje početak (za pravougaonik jedno teme, za krug centar, za trougao centar opisanog kruga)
+	Prevlačenjem se oblik "iscrtava" (tj. prikazuje se kako bi izgledao ako bi u tom trenutku pustili miša)
+	
+	Za transformacije, potrebno je kliknuti select tool:
+		Za transliranje, potrebno je oblik uhvatiti u centru, dok je za rotaciju i skaliranje neophodno uhvatiti oblik u okolini ivice
+
+2) Konfigurisanje toolbar-a:
+	U meniju Window->Appearance je moguće selektovati koje akcije su prikazane u toolbar-u.
+	Skup akcija koje smo izabrali je zapamćen pri prekidu rada programa.
+	
+3) Shareovanje dokumenata:
+	Klikom na dugme za share u toolBaru otvara se Dialog za odabir projekta sa kojim želite da podelite dokument.
+	Kada se dokument share-uje ispred novog će stajati (Shared). Stari ostaje isti, tj nema  (Shared) ispred imena.
+	Dokument je moguće share-ovati koliko god puta. Pri serijalizaciji share-ovani dokumenti postaju obicni dokumenti.
+	
+4) Trashcan:
+	Svi dokumenti sem share-ovanih će se nalaziti u TrashCan-u prilikom brisanja projekta. 
+	Moguće je selektovati više dokumenata iz TrashCan-a i postaviti ih u jedan Projekat.
+
+5) Editovanje slotova:
+	Desni klik na slot otvara popup meni  za odabir tipa slota.
+	Desni klik na tipiziran slot daje popup meni sa opcijom edit, koji  otvara  editor.
+	

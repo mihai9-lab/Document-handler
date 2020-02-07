@@ -1,0 +1,96 @@
+package state;
+
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
+import command.RotateAndScaleCommand;
+import tree.model.Page;
+import tree.model.PageSelectedSlots;
+import tree.model.Slot;
+import view.PageView;
+
+public class RotateAndScaleState implements IState {
+	
+	private Point pos;
+	private Point begPos;
+	private Page p;
+	
+	public void mousePressed(MouseEvent e){
+		pos=e.getPoint();
+		p=((PageView)e.getComponent()).getPage();
+		begPos=e.getPoint();
+	}
+	
+	public void mouseDragged(MouseEvent e){
+		if(p!=null && p==((PageView)e.getComponent()).getPage()) {
+			double xCenter = p.getPageSelectedSlots().getXCenter();
+			double yCenter = p.getPageSelectedSlots().getYCenter();
+			double dx = pos.getX() - xCenter;
+			double dy = pos.getY() - yCenter;
+			double oldDist = Math.sqrt(dx*dx+dy*dy);
+			double oldAng = Math.atan2(-dy, dx);
+			dx = e.getPoint().getX() - xCenter;
+			dy = e.getPoint().getY() - yCenter;
+			double curDist = Math.sqrt(dx*dx+dy*dy);
+			double curAng = Math.atan2(-dy, dx);
+			p.getPageSelectedSlots().scale(curDist/oldDist);
+			p.getPageSelectedSlots().rotate(curAng-oldAng);
+			if(!inside(e)) {
+				p.getPageSelectedSlots().scale(oldDist/curDist);
+				p.getPageSelectedSlots().rotate(oldAng-curAng);
+			}
+			else pos = e.getPoint();
+		}
+	}
+	
+	public void mouseReleased(MouseEvent e){
+		if(p!=null && p==((PageView)e.getComponent()).getPage()) {
+			double xCenter = p.getPageSelectedSlots().getXCenter();
+			double yCenter = p.getPageSelectedSlots().getYCenter();
+			double dx = pos.getX() - xCenter;
+			double dy = pos.getY() - yCenter;
+			double oldDist = Math.sqrt(dx*dx+dy*dy);
+			double oldAng = Math.atan2(-dy, dx);
+			dx = e.getPoint().getX() - xCenter;
+			dy = e.getPoint().getY() - yCenter;
+			double curDist = Math.sqrt(dx*dx+dy*dy);
+			double curAng = Math.atan2(-dy, dx);
+			p.getPageSelectedSlots().scale(curDist/oldDist);
+			p.getPageSelectedSlots().rotate(curAng-oldAng);
+			if(!inside(e)) {
+				p.getPageSelectedSlots().scale(oldDist/curDist);
+				p.getPageSelectedSlots().rotate(oldAng-curAng);
+			}
+			else pos = e.getPoint();
+			
+			xCenter = p.getPageSelectedSlots().getXCenter();
+			yCenter = p.getPageSelectedSlots().getYCenter();
+			dx = pos.getX() - xCenter;
+			dy = pos.getY() - yCenter;
+			curDist = Math.sqrt(dx*dx+dy*dy);
+			curAng = Math.atan2(-dy, dx);
+			dx = begPos.getX() - xCenter;
+			dy = begPos.getY() - yCenter;
+			oldDist = Math.sqrt(dx*dx+dy*dy);
+			oldAng = Math.atan2(-dy, dx);
+			p.getPageSelectedSlots().scale(oldDist/curDist);
+			p.getPageSelectedSlots().rotate(oldAng-curAng);
+			
+			gui.Frame.getInstance().getICommandManager().addCommand(new RotateAndScaleCommand(p,p.getPageSelectedSlots(),curDist/oldDist,curAng-oldAng));
+		}
+	}
+	
+	private boolean inside(MouseEvent e) {
+		PageView pv = (PageView)e.getComponent();
+		PageSelectedSlots ps = p.getPageSelectedSlots();
+		int c=ps.getSelectedCount();
+		for(int i=0;i<c;i++) {
+			Slot s=ps.getSlot(i);
+			if(s.getGeometry().getMaxX()>pv.getWidth()) return false;
+			if(s.getGeometry().getMinX()<0) return false;
+			if(s.getGeometry().getMaxY()>pv.getHeight()) return false;
+			if(s.getGeometry().getMinY()<0) return false;
+		}
+		return true;
+	}
+}

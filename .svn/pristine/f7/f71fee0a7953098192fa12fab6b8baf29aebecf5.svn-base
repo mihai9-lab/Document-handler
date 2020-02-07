@@ -1,0 +1,24 @@
+package actions;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+import error_handling.ExceptionHandler;
+import gui.Frame;
+import tree.model.ITreeNodeSerialization;
+
+public class DrawCircleAction extends AbstractIconAction{
+
+	public DrawCircleAction() {
+		putValue(SMALL_ICON, loadIcon("images/draw-circle.png"));
+		putValue(NAME, "Draw Circle");
+		putValue(SHORT_DESCRIPTION, "Draw Circle");
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		gui.Frame.getInstance().getIStateManager().setCircleState();
+	}
+}

@@ -1,0 +1,8 @@
+NewNodeAction true
+RenameNodeAction true
+DeleteNodeAction true
+SaveNodeAction true
+SaveAsNodeAction true
+OpenNodeAction true
+CloseTabAction true
+CloseAllTabsAction true

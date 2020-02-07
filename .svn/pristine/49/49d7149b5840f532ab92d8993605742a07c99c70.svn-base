@@ -1,0 +1,37 @@
+package state.state_manager;
+
+import state.CircleState;
+import state.IState;
+import state.RectangleState;
+import state.SelectState;
+import state.TriangleState;
+
+public class StateManager implements IStateManager {
+	private IState currentState;
+	private CircleState circleState;
+	private RectangleState rectangleState;
+	private TriangleState triangleState;
+	private SelectState selectState;
+	public StateManager() {
+		circleState = new CircleState();
+		rectangleState = new RectangleState();
+		triangleState = new TriangleState();
+		selectState = new SelectState();
+		currentState = selectState;
+	}
+	public void setCircleState() {
+		this.currentState = circleState;
+	}
+	public void setRectangleState() {
+		this.currentState = rectangleState;
+	}
+	public void setTriangleState() {
+		this.currentState = triangleState;
+	}
+	public void setSelectState() {
+		this.currentState = selectState;
+	}
+	public IState getCurrentState() {
+		return currentState;
+	}
+}
